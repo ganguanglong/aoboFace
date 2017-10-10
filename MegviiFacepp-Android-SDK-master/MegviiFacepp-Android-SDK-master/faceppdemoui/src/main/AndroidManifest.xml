@@ -21,7 +21,7 @@
 
         <activity
             android:name="com.facepp.library.OpenglActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name="com.facepp.library.DetectActivity"
             android:screenOrientation="portrait"></activity>

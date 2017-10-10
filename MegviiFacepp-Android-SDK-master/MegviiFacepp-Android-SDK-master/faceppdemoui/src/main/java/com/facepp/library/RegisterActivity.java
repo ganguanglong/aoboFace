@@ -304,7 +304,7 @@ public class RegisterActivity extends Activity {
                                 addFaceToDB();
                                 et_first_name.setText("");
                                 iv_face.setImageResource(R.drawable.avatar);
-                                Toast.makeText(RegisterActivity.this, "恭喜，添加成功", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterActivity.this, "注册成功！", Toast.LENGTH_SHORT).show();
                             }
                         });
                     } else {

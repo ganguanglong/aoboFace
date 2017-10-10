@@ -118,20 +118,23 @@ public class OpenglActivity extends Activity
         /*get GreenDao*/
         initGreenDao();
     }
+
     private DaoSession daoSession;
+
     private void initGreenDao() {
         daoSession = GreenDaoUtil.getDaoSession(this);
         mFaceUserDao = daoSession.getFaceUserDao();
     }
 
     private SpeechSynthesizer mTts;
+
     private void initVoice() {
-        mTts = SpeechSynthesizer.createSynthesizer(this,null);
-        mTts.setParameter(SpeechConstant.VOICE_NAME,"xiaoyan");
-        mTts.setParameter(SpeechConstant.SPEED,"50");
-        mTts.setParameter(SpeechConstant.VOLUME,"80");
-        mTts.setParameter(SpeechConstant.ENGINE_MODE,SpeechConstant.MODE_AUTO);
-        mTts.setParameter(SpeechConstant.ENGINE_TYPE,SpeechConstant.TYPE_CLOUD);
+        mTts = SpeechSynthesizer.createSynthesizer(this, null);
+        mTts.setParameter(SpeechConstant.VOICE_NAME, "xiaoyan");
+        mTts.setParameter(SpeechConstant.SPEED, "50");
+        mTts.setParameter(SpeechConstant.VOLUME, "80");
+        mTts.setParameter(SpeechConstant.ENGINE_MODE, SpeechConstant.MODE_AUTO);
+        mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
     }
 
     private Facepp facepp; /*实例化一个Facepp*/
@@ -583,11 +586,11 @@ public class OpenglActivity extends Activity
                     SearchFace searchFace;
                     searchFace = parseWithGson(response, SearchFace.class);
                     /*如果是同一个face_token，则不用再判断了，浪费时间*/
-                    if(searchFace==null){
+                    if (searchFace == null) {
                         return;
                     }
-                    Log.i(TAG, "onResponse: "+searchFace.getFaces().size());
-                    if (searchFace.getFaces().size()==0){
+                    Log.i(TAG, "onResponse: " + searchFace.getFaces().size());
+                    if (searchFace.getFaces().size() == 0) {
                         return;
                     }
                     if (searchFace.getResults().get(0).getConfidence() < 85) {
@@ -631,9 +634,9 @@ public class OpenglActivity extends Activity
                             face_token_know = searchFace.getResults().get(0).getFace_token();
 //                            Log.i(TAG, "老朋友判断:，现在 face_token_new="+face_token_know);
 
-                            if(!isSpeaking) {
+                            if (!isSpeaking) {
                                 getUserName();
-                                startSpeak("您好,"+userName);
+                                startSpeak("您好," + userName);
                             }
                         }
 
@@ -667,7 +670,9 @@ public class OpenglActivity extends Activity
         });
 
     }
+
     private String userName;
+
     private void getUserName() {
 //         /*全部查询*/
 //        List<FaceUser> mList = mFaceUserDao.queryBuilder().listLazy();
@@ -676,18 +681,19 @@ public class OpenglActivity extends Activity
 
         /*条件查询*/
         FaceUser user = mFaceUserDao.queryBuilder().where(FaceUserDao.Properties.FaceToken.eq(face_token_know)).build().unique();
-        userName=user.getName();
-        Log.i("ggl", "onCreate: " +user.getName()+user.getId());
+        userName = user.getName();
+        Log.i("ggl", "onCreate: " + user.getName() + user.getId());
 
     }
 
     /*为了不被打断，判断是否正在朗读，false代表没有正在朗读，可以进行下一段朗读，true则代表不接受新的朗读请求*/
-    private Boolean isSpeaking=false;
+    private Boolean isSpeaking = false;
+
     private void startSpeak(String string) {
         mTts.startSpeaking(string, new SynthesizerListener() {
             @Override
             public void onSpeakBegin() {
-                isSpeaking=true;
+                isSpeaking = true;
             }
 
             @Override
@@ -697,12 +703,12 @@ public class OpenglActivity extends Activity
 
             @Override
             public void onSpeakPaused() {
-                isSpeaking=false;
+                isSpeaking = false;
             }
 
             @Override
             public void onSpeakResumed() {
-                isSpeaking=true;
+                isSpeaking = true;
             }
 
             @Override
@@ -712,7 +718,7 @@ public class OpenglActivity extends Activity
 
             @Override
             public void onCompleted(SpeechError speechError) {
-                isSpeaking=false;
+                isSpeaking = false;
             }
 
             @Override
@@ -731,7 +737,41 @@ public class OpenglActivity extends Activity
         if (!mkDir.exists()) {
             mkDir.mkdirs();   //目录不存在，则创建
         }
+        ///storage/emulated/0/ggljpeg/storage/emulated/0/ggljpeg/Detect.jpg:
         /*旋转图像的方向*/
+//        rotate270(imgData,width,height,sdRoot,dir,fileName);
+       /*澳博的平板需要旋转180度*/
+        rotate180(imgData, width, height, sdRoot, dir,fileName);
+
+        Log.i(TAG, "检测： " + mkDir + "/" + fileName);
+        return mkDir + "/" + fileName;
+    }
+
+    private void rotate180(byte[] imgData, int width, int height, File sdRoot, String dir,String fileName) {
+        byte[] Data = YuvUtil.rotateYUV420spRotate180(imgData, width, height);
+        File pictureFile = new File(sdRoot, dir + fileName);
+
+        try {
+            if (pictureFile.exists()) {
+                pictureFile.delete();
+                pictureFile.createNewFile();
+            }
+//                FileOutputStream filecon = new FileOutputStream(pictureFile);
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(pictureFile));
+            //由于旋转了270度，宽高要互换，同理，90度也是
+            YuvImage image = new YuvImage(Data, ImageFormat.NV21, width, height, null);   //将NV21 data保存成YuvImage
+            //图像压缩
+            Log.i(TAG, "照片有了 ");
+            image.compressToJpeg(
+                    new Rect(0, 0, image.getWidth(), image.getHeight()),
+                    70, bos);   // 将NV21格式图片，以质量70压缩成Jpeg，并得到JPEG数据流
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void rotate270(byte[] imgData, int width, int height, File sdRoot, String dir,String fileName) {
         byte[] Data = YuvUtil.rotateYUV420Degree270(imgData, width, height);
 
         File pictureFile = new File(sdRoot, dir + fileName);
@@ -754,9 +794,6 @@ public class OpenglActivity extends Activity
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        Log.i(TAG, "检测： " + mkDir + "/" + fileName);
-        return mkDir + "/" + fileName;
     }
 
     private <T> T parseWithGson(Response response, Class<T> clazz) throws IOException {

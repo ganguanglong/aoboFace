@@ -78,7 +78,7 @@ public class ICamera {
             /*获得摄像头的角度（0，90，180，270）*/
             Angle = getCameraAngle(activity);
             Log.w("ceshi", "Angle==" + Angle);
-            // mCamera.setDisplayOrientation(Angle);
+            //mCamera.setDisplayOrientation(Angle);
             mCamera.setParameters(params);
             /*返回这个摄像头*/
             return mCamera;
@@ -229,6 +229,7 @@ public class ICamera {
             matrix.setRotate(-90);
         } else {
             matrix.setRotate(90);
+
         }
         tmpBitmap = Bitmap.createBitmap(tmpBitmap, 0, 0, tmpBitmap.getWidth(),
                 tmpBitmap.getHeight(), matrix, true);

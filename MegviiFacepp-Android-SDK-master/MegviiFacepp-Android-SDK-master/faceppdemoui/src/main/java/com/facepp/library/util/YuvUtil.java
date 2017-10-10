@@ -27,7 +27,7 @@ public class YuvUtil {
         return yuv;
     }
     //旋转180度（顺时逆时结果是一样的）
-    private static byte[] YUV420spRotate180(byte[] data, int imageWidth, int imageHeight) {
+    public static byte[] rotateYUV420spRotate180(byte[] data, int imageWidth, int imageHeight) {
         byte [] yuv = new byte[imageWidth*imageHeight*3/2];
         int n = 0;
         int uh = imageHeight >> 1;

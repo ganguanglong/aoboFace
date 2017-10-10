@@ -9,7 +9,7 @@ import com.iflytek.cloud.SpeechUtility;
  */
 
 public class MyApplication extends Application {
-    /*hello2*/
+
     @Override
     public void onCreate() {
 

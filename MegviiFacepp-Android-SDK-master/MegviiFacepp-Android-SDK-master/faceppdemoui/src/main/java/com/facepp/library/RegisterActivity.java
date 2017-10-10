@@ -424,7 +424,7 @@ public class RegisterActivity extends Activity {
                         /*清空上一次获取到的face_token*/
                         face_token = "";
                         face_token = detectFace.getFaces().get(0).getFace_token();
-                        age=detectFace.getFaces().get(0).getAttributes().getAge().getValue();
+                        age = detectFace.getFaces().get(0).getAttributes().getAge().getValue();
                         Log.i(TAG, "detect success");
                         Log.i(TAG, "face_token: " + face_token);
                         Log.i(TAG, "time_used: " + detectFace.getTime_used());
@@ -477,6 +477,8 @@ public class RegisterActivity extends Activity {
      * 1.发送数据到faceSearch；
      * 2.判断是否已经注册，如果是则提示，如果否则进行注册 doRegister();
      */
+    String error;
+
     private void handleFace2() {
         showProgressDialog("验证中", "正在验证照片有效性..，请稍后");
         mFile = new File(Util.FILE_PATH + "Camera" + ".jpg");
@@ -542,6 +544,9 @@ public class RegisterActivity extends Activity {
                         });
 
                     }
+                    /*如果返回一个空集合，说明这个集合里面没有添加过人脸，可以注册*/
+                } else if (response.body().string().contains("EMPTY_FACESET")){
+                    doRegister();
                     /*如果返回了错误的响应值，例如并发问题，或者超时问题*/
                 } else if (response.code() == 403) {
                     hideProgressDialog();
@@ -552,12 +557,12 @@ public class RegisterActivity extends Activity {
                         }
                     });
                 } else {
-                    Log.i(TAG, "onResponse:handleFace2 ");
+                    error = response.body().string();
                     hideProgressDialog();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(RegisterActivity.this, "网络出现问题，请重试！", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "网络出现问题，请重试！/n" + error, Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -579,9 +584,10 @@ public class RegisterActivity extends Activity {
      * 2.把相关属性添加到FaceUser类
      * 3.把FaceUser类添加到数据库
      */
+
     private void addFaceToDB() {
         /*增加*/
-        FaceUser user = new FaceUser(null, face_token,gender,age, name);
+        FaceUser user = new FaceUser(null, face_token, gender, age, name);
         mFaceUserDao.insert(user);
     }
 

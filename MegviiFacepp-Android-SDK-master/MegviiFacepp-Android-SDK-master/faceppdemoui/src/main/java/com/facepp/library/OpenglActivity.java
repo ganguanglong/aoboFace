@@ -2,6 +2,7 @@ package com.facepp.library;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
@@ -23,6 +24,8 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -150,6 +153,7 @@ public class OpenglActivity extends Activity
     private Handler mHandler; /*实例化一个mHandler*/
     private GLSurfaceView mGlSurfaceView; /*GLSurfaceView*/
     private ICamera mICamera; /*实例化一个摄像头类*/
+    private Button btn_register;
     private DialogUtil mDialogUtil; /*实例化一个对话框类*/
 
     private void init() {
@@ -188,6 +192,15 @@ public class OpenglActivity extends Activity
         mICamera = new ICamera();                                                                                      /*1.3.6*/
 
         mDialogUtil = new DialogUtil(this);                                                                             /*1.3.7*/
+
+        btn_register= (Button) findViewById(R.id.btn_register);
+        btn_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OpenglActivity.this,RegisterActivity.class));
+            }
+        });
+
 
     }
 

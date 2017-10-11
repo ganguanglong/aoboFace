@@ -3,10 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.opengl.GLSurfaceView
-        android:id="@+id/opengl_layout_surfaceview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+
 
     <TextView
         android:id="@+id/opengl_layout_debugInfotext"
@@ -14,7 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dip"
         android:textColor="#ffffffff"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/opengl_layout_AttriButetext"
@@ -23,7 +21,8 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dip"
         android:textColor="#ffffffff"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/opengl_layout_debugPrinttext"
@@ -32,18 +31,27 @@
         android:layout_below="@+id/opengl_layout_debugInfotext"
         android:layout_marginLeft="5dip"
         android:textColor="#ffffffff"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/opengl_image"
         android:layout_width="150dip"
         android:layout_height="150dip"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/detect_background"/>
+    <android.opengl.GLSurfaceView
+        android:id="@+id/opengl_layout_surfaceview"
+        android:layout_width="6.4dp"
+        android:layout_height="4.8dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
 </RelativeLayout>

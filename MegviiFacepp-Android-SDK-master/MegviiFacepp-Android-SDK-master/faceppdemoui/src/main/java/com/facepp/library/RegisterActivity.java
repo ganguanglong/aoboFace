@@ -184,20 +184,19 @@ public class RegisterActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (REQUEST_IMAGE_CAPTURE == requestCode) {
-
-            updateGallery(mPicUrl);
-            showPhoto(pictureFile.getAbsolutePath());
-
-        } else {
-            iv_face.setImageResource(R.drawable.avatar);
+            if (-1 == resultCode) {
+                updateGallery(mPicUrl);
+                showPhoto(pictureFile.getAbsolutePath());
+            } else {
+                iv_face.setImageResource(R.drawable.avatar);
+            }
         }
-
-
     }
 
-    /**
-     * 刷新媒体库
-     */
+        /**
+         * 刷新媒体库
+         */
+
     private void updateGallery(String infoString) {
         MediaScannerConnection.scanFile(this, new String[]{infoString}, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
@@ -545,7 +544,7 @@ public class RegisterActivity extends Activity {
 
                     }
                     /*如果返回一个空集合，说明这个集合里面没有添加过人脸，可以注册*/
-                } else if (response.body().string().contains("EMPTY_FACESET")){
+                } else if (response.body().string().contains("EMPTY_FACESET")) {
                     doRegister();
                     /*如果返回了错误的响应值，例如并发问题，或者超时问题*/
                 } else if (response.code() == 403) {

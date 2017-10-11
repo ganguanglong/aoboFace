@@ -9,6 +9,8 @@ import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.Surface;
 import android.widget.RelativeLayout;
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
+import static android.view.View.LAYOUT_DIRECTION_LTR;
 
 /**
  * 照相机工具类
@@ -57,6 +60,7 @@ public class ICamera {
             int width = 640;
             int height = 480;
 
+
             if (resolutionMap != null) {
                 width = resolutionMap.get("width");
                 height = resolutionMap.get("height");
@@ -74,11 +78,16 @@ public class ICamera {
                     mCamera.getParameters(), width, height);
             cameraWidth = bestPreviewSize.width;
             cameraHeight = bestPreviewSize.height;
-            params.setPreviewSize(cameraWidth, cameraHeight);
+            Log.i(TAG, "openCamera: cameraWidth+cameraHeight"+cameraWidth+"   "+cameraHeight);
+            /*defult*/
+            params.setPreviewSize(cameraWidth,cameraHeight);
+
             /*获得摄像头的角度（0，90，180，270）*/
             Angle = getCameraAngle(activity);
             Log.w("ceshi", "Angle==" + Angle);
-            //mCamera.setDisplayOrientation(Angle);
+            Log.i(TAG, "openCamera: "+mCamera.getParameters());
+
+            mCamera.setDisplayOrientation(Angle-180);
             mCamera.setParameters(params);
             /*返回这个摄像头*/
             return mCamera;
@@ -91,18 +100,25 @@ public class ICamera {
     // 通过屏幕参数、相机预览尺寸计算布局参数
     public RelativeLayout.LayoutParams getLayoutParam() {
         float scale = cameraWidth * 1.0f / cameraHeight;
-
-        int layout_width = Screen.mWidth;
+        int layout_width= Screen.mWidth;
         int layout_height = (int) (layout_width * scale);
 
         if (Screen.mWidth >= Screen.mHeight) {
             layout_height = Screen.mHeight;
             layout_width = (int) (layout_height / scale);
         }
-
+        Log.i(TAG, "getLayoutParam: Screen.mWidth+Screen.mHeight" +Screen.mWidth+""+Screen.mHeight);
+        Log.i(TAG, "getLayoutParam:layout_width + layout_height "+layout_width+"   "+layout_height);
+        /*defult*/
+//        RelativeLayout.LayoutParams layout_params = new RelativeLayout.LayoutParams(
+//                layout_width,layout_height);
+        /*custom*/
         RelativeLayout.LayoutParams layout_params = new RelativeLayout.LayoutParams(
-                layout_width, layout_height);
-        layout_params.addRule(RelativeLayout.CENTER_HORIZONTAL);// 设置照相机水平居中
+                layout_height/9,layout_width/9);
+
+//        layout_params.addRule(RelativeLayout.CENTER_HORIZONTAL);// 设置照相机水平居中
+        layout_params.addRule(RelativeLayout.ALIGN_PARENT_START);// 设置照相机在左上角
+
 
         return layout_params;
     }
@@ -272,13 +288,14 @@ public class ICamera {
                 degrees = 270;
                 break;
         }
-
+        Log.i(TAG, "getCameraAngle: "+degrees);
         if (info.facing == CameraInfo.CAMERA_FACING_FRONT) {
             rotateAngle = (info.orientation + degrees) % 360;
             rotateAngle = (360 - rotateAngle) % 360; // compensate the mirror
         } else { // back-facing
             rotateAngle = (info.orientation - degrees + 360) % 360;
         }
+        Log.i(TAG, "getCameraAngle: "+rotateAngle);
         return rotateAngle;
     }
 }

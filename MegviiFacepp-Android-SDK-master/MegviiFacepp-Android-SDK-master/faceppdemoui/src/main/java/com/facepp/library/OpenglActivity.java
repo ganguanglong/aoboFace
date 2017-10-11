@@ -15,12 +15,15 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView; /*Surface相关*/
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -200,6 +203,7 @@ public class OpenglActivity extends Activity
     private Camera mCamera;
     private String trackModel;  /*轨迹模式*/
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onResume() {
         Log.i(TAG, "onResume");
@@ -216,6 +220,8 @@ public class OpenglActivity extends Activity
             /*通过摄像头的宽高，设置mGlSurfaceView的宽高*/
             RelativeLayout.LayoutParams layout_params = mICamera.getLayoutParam();
             mGlSurfaceView.setLayoutParams(layout_params);
+
+
 
             /*设置区域选择的属性*/
             /*获得摄像头的最佳宽高*/
@@ -339,7 +345,7 @@ public class OpenglActivity extends Activity
         /*设置画面的大小
         * glViewport它负责把视景体截取的图像按照怎样的高和宽显示到屏幕上。
         */
-        GLES20.glViewport(0, 0, width, height);
+        GLES20.glViewport(0, 0, width,height );
 
         /*这一条的计算公式是错的，下面又重新赋值了。*/
         //ratio是比例的意思
@@ -350,7 +356,9 @@ public class OpenglActivity extends Activity
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
         /*这是一个投影转换矩阵，其中的学问是关于gl和Matrix，比较深入*/
-        Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+//        Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+
+
         // Matrix.perspectiveM(mProjMatrix, 0, 0.382f, ratio, 3, 700);
     }
 
@@ -373,6 +381,7 @@ public class OpenglActivity extends Activity
         /*前面进行了GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);*/
         // Log.w("ceshi", "onDrawFrame===");
         GLES20.glClear(GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);// 清除屏幕和深度缓存
+
         float[] mtx = new float[16];
 
         /*
@@ -386,13 +395,17 @@ public class OpenglActivity extends Activity
         注释掉它能看出来画面是混乱的，但是人脸关键点是清晰的。
          */
         mSurface.getTransformMatrix(mtx);
-        /*跟预览画面有关的绘制，注释掉的话就看不到预览画面了,只剩人脸关键点了*/
-        mCameraMatrix.draw(mtx);
-        // Set the camera position (View matrix)
-        Matrix.setLookAtM(mVMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1f, 0f);
 
+        /*跟预览画面有关的绘制，注释掉的话就看不到预览画面了,只剩人脸关键点了*/
+
+        mCameraMatrix.draw(mtx);
+
+
+        // Set the camera position (View matrix)
+
+//        Matrix.setLookAtM(mVMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1f, 0f);
         // Calculate the projection and view transformation
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+//        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
         /*跟人脸点有关的绘制，注释掉就看不到人脸点了*/
 
         /*mSurface = new SurfaceTexture
@@ -400,7 +413,10 @@ public class OpenglActivity extends Activity
         * 注释掉它就没有预览画，只剩下人脸关键点
         */
         // 更新image，会调用onFrameAvailable方法，
-//        mSurface.updateTexImage();
+
+        mSurface.updateTexImage();
+
+
     }
 
     /**
@@ -418,6 +434,8 @@ public class OpenglActivity extends Activity
 
     /**
      * 这个方法是在mCamera.setPreviewCallback(mActivity);之后触发的。
+     * 这里拿到的预览画面，应该是onDrawFrame处理过的画面，至少，是onDrawFrame之后，
+     * GLES20或者mtx被处理过后，才到这个方法。
      * 这个方法主要是把预览画面发出去，并处理接收回来的数据。
      * 如果把mCamera.setPreviewCallback(mActivity)注释掉，也就是不走这个方法的话
      * <p>
@@ -472,10 +490,15 @@ public class OpenglActivity extends Activity
                 else if (orientation == 3)
                     rotation = 360 - Angle;
                 /*把计算结果设置到摄像头*/
+                Log.i(TAG, "run: "+rotation);
                 setConfig(rotation);
                 /*人脸检测，返回一个faces，是一个face的数组*/
                 //把onPreviewFrame获得的imgData传进去应该是最重要的
-                final Facepp.Face[] faces = facepp.detect(imgData, width, height, Facepp.IMAGEMODE_NV21);
+//                final Facepp.Face[] faces = facepp.detect(imgData,height ,width,Facepp.IMAGEMODE_NV21);
+//                fileName = saveToJPEGandOutput(imgData, height,width );
+
+                final Facepp.Face[] faces = facepp.detect(imgData,width, height,Facepp.IMAGEMODE_NV21);
+
                 /*判断faces返回的数据是否为空*/
                 if (faces != null) {
                     /*actionMaticsTime设置为当前时间*/
@@ -483,7 +506,6 @@ public class OpenglActivity extends Activity
                     /*新建一个动态数组 和人脸关键点有关的*/
                     confidence = 0.0f;
                     /*faces的长度如果大于等于0*/
-
                     if (faces.length >= 0) {
                         /*遍历faces*/
                         for (int c = 0; c < faces.length; c++) {
@@ -491,10 +513,8 @@ public class OpenglActivity extends Activity
 //                                updateGallery(mPicUrl);
                                 Log.i(TAG, "face[c]");
                             /*保存为JPEG照片*/
-                                fileName = saveToJPEGandOutput(imgData, width, height);
+                                fileName = saveToJPEGandOutput(imgData,width, height);
                                 Log.i(TAG, "检测：保存了一张新照片");
-
-
                                 Log.i(TAG, "检测：可以检测");
                                 /*发送请求，看看是否认识的人*/
                                 sendSearchRequest(fileName);
@@ -695,12 +715,9 @@ public class OpenglActivity extends Activity
             public void onSpeakBegin() {
                 isSpeaking = true;
             }
-
             @Override
             public void onBufferProgress(int i, int i1, int i2, String s) {
-
             }
-
             @Override
             public void onSpeakPaused() {
                 isSpeaking = false;
@@ -739,61 +756,43 @@ public class OpenglActivity extends Activity
         }
         ///storage/emulated/0/ggljpeg/storage/emulated/0/ggljpeg/Detect.jpg:
         /*旋转图像的方向*/
-//        rotate270(imgData,width,height,sdRoot,dir,fileName);
+//        imgData=rotate270(imgData,width,height);
        /*澳博的平板需要旋转180度*/
-        rotate180(imgData, width, height, sdRoot, dir,fileName);
+        imgData=rotate180(imgData, width, height);
+
+        File pictureFile = new File(sdRoot, dir + fileName);
+
+        try {
+            if (pictureFile.exists()) {
+                pictureFile.delete();
+                pictureFile.createNewFile();
+            }
+//                FileOutputStream filecon = new FileOutputStream(pictureFile);
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(pictureFile));
+            //由于旋转了270度，宽高要互换，同理，90度也是
+            YuvImage image = new YuvImage(imgData, ImageFormat.NV21,width ,height , null);   //将NV21 data保存成YuvImage
+            //图像压缩
+            Log.i(TAG, "照片有了 ");
+            image.compressToJpeg(
+                    new Rect(0, 0, image.getWidth(), image.getHeight()),
+                    70, bos);   // 将NV21格式图片，以质量70压缩成Jpeg，并得到JPEG数据流
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Log.i(TAG, "检测： " + mkDir + "/" + fileName);
         return mkDir + "/" + fileName;
     }
 
-    private void rotate180(byte[] imgData, int width, int height, File sdRoot, String dir,String fileName) {
+    private byte[] rotate180(byte[] imgData, int width, int height) {
         byte[] Data = YuvUtil.rotateYUV420spRotate180(imgData, width, height);
-        File pictureFile = new File(sdRoot, dir + fileName);
-
-        try {
-            if (pictureFile.exists()) {
-                pictureFile.delete();
-                pictureFile.createNewFile();
-            }
-//                FileOutputStream filecon = new FileOutputStream(pictureFile);
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(pictureFile));
-            //由于旋转了270度，宽高要互换，同理，90度也是
-            YuvImage image = new YuvImage(Data, ImageFormat.NV21, width, height, null);   //将NV21 data保存成YuvImage
-            //图像压缩
-            Log.i(TAG, "照片有了 ");
-            image.compressToJpeg(
-                    new Rect(0, 0, image.getWidth(), image.getHeight()),
-                    70, bos);   // 将NV21格式图片，以质量70压缩成Jpeg，并得到JPEG数据流
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return Data;
     }
 
-    private void rotate270(byte[] imgData, int width, int height, File sdRoot, String dir,String fileName) {
+    private byte[] rotate270(byte[] imgData, int width, int height) {
         byte[] Data = YuvUtil.rotateYUV420Degree270(imgData, width, height);
-
-        File pictureFile = new File(sdRoot, dir + fileName);
-
-        try {
-            if (pictureFile.exists()) {
-                pictureFile.delete();
-                pictureFile.createNewFile();
-            }
-//                FileOutputStream filecon = new FileOutputStream(pictureFile);
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(pictureFile));
-            //由于旋转了270度，宽高要互换，同理，90度也是
-            YuvImage image = new YuvImage(Data, ImageFormat.NV21, height, width, null);   //将NV21 data保存成YuvImage
-            //图像压缩
-            Log.i(TAG, "照片有了 ");
-            image.compressToJpeg(
-                    new Rect(0, 0, image.getWidth(), image.getHeight()),
-                    70, bos);   // 将NV21格式图片，以质量70压缩成Jpeg，并得到JPEG数据流
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return Data;
     }
 
     private <T> T parseWithGson(Response response, Class<T> clazz) throws IOException {

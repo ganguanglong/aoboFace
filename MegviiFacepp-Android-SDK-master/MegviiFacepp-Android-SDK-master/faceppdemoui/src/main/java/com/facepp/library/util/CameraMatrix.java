@@ -44,15 +44,37 @@ public class CameraMatrix {
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per
     // vertex
     // 直角坐标系
-    static float squareCoords[] = {-1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
+    static float squareCoords[] = {
+            -1.0f, 1.0f,
+            -1.0f, -1.0f,
+            1.0f, -1.0f,
             1.0f, 1.0f,};
     // 结构顶点（8个数字表示了4个点x,y的位置.大小在0-1之间）
-    static float textureVertices[] = {0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-            0.0f, 0.0f,};
+    /*default*/
+//    static float textureVertices[] = {
+//            0.0f, 1.0f,
+//            1.0f, 1.0f,
+//            1.0f, 0.0f,
+//            0.0f, 0.0f,};
+    /*custom*/
+    static float textureVertices[] = {
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 1.0f,};
+//    static float textureVertices[] = {
+//            0.0f, 0.0f,
+//            0.0f, 1.0f,
+//            1.0f, 1.0f,
+//            1.0f, 0.0f,};
+
 
     private int mTextureID;
 
-    static float LineCoords[] = {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f};
+    static float LineCoords[] = {
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f};
 
     private final int VertexCount = LineCoords.length / 3;
 
@@ -105,7 +127,7 @@ public class CameraMatrix {
                 "inputTextureCoordinate");
         GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
 
-        //照相机镜像
+//        照相机镜像
         textureVerticesBuffer.clear();
         textureVerticesBuffer.put(transformTextureCoordinates(textureVertices,
                 mtx));

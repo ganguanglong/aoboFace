@@ -222,6 +222,7 @@ public class OpenglActivity extends Activity
         Log.i(TAG, "onResume");
         super.onResume();
         /*这个工具类的方法是用于保持屏幕常量，可以是灰的*/
+
         ConUtil.acquireWakeLock(this);
         /*打开摄像头*/
         mCamera = mICamera.openCamera(isBackCamera, this, resolutionMap);
@@ -878,7 +879,7 @@ public class OpenglActivity extends Activity
 
         timeHandle.removeMessages(0);
 
-        finish();
+//        finish();
     }
 
     @Override

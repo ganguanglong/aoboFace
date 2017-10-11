@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -682,4 +683,24 @@ public class RegisterActivity extends Activity {
         }
         return gender;
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) { //表示按返回键 时的操作
+                // 监听到返回按钮点击事件
+                Log.i(TAG, "onKeyDown: 监听到了点击返回键");
+                Intent intent = new Intent();
+                intent.setClass(this, FaceppActionActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//If set, and the activity being launched is already running in the current task, then instead of launching a new instance of that activity,all of the other activities on top of it will be closed and this Intent will be delivered to the (now on top) old activity as a new Intent.
+                startActivity(intent);
+
+                finish();
+                  return false;    //已处理
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
 }

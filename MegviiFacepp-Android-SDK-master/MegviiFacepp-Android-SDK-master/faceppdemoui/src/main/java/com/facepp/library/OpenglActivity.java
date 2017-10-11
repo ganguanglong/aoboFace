@@ -134,7 +134,7 @@ public class OpenglActivity extends Activity
     private void initVoice() {
         mTts = SpeechSynthesizer.createSynthesizer(this, null);
         mTts.setParameter(SpeechConstant.VOICE_NAME, "xiaoyan");
-        mTts.setParameter(SpeechConstant.SPEED, "50");
+        mTts.setParameter(SpeechConstant.SPEED, "70");
         mTts.setParameter(SpeechConstant.VOLUME, "80");
         mTts.setParameter(SpeechConstant.ENGINE_MODE, SpeechConstant.MODE_AUTO);
         mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
@@ -702,7 +702,6 @@ public class OpenglActivity extends Activity
         /*条件查询*/
         FaceUser user = mFaceUserDao.queryBuilder().where(FaceUserDao.Properties.FaceToken.eq(face_token_know)).build().unique();
         userName = user.getName();
-        Log.i("ggl", "onCreate: " + user.getName() + user.getId());
 
     }
 

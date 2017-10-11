@@ -316,4 +316,9 @@
         layout="@layout/power_layout"
         android:visibility="visible" />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"/>
+
 </RelativeLayout>

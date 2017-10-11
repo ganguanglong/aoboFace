@@ -79,6 +79,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
                 requestCameraPerm();
             }
         }, 500);
+        startDetectActivity();
     }
 
     private void init() {
@@ -379,5 +380,35 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
                 editItemTexts[1].setText(str);
             }
         });
+    }
+
+    private void startDetectActivity(){
+        min_face_size = (int) Long.parseLong(editItemTexts[0].getText().toString());
+        detection_interval = (int) Long.parseLong(editItemTexts[2].getText().toString());
+        Log.w("ceshi", "min_face_size===" + min_face_size + ", " + detection_interval);
+
+        if (isStartRecorder)
+            if (resolutionMap != null) {
+                int width = resolutionMap.get("width");
+                int height = resolutionMap.get("height");
+                if (width == 1056 && height == 864)
+                    resolutionMap = null;
+                if (isBackCamera) {
+                    if (width == 960 && height == 720)
+                        resolutionMap = null;
+                    if (width == 800 && height == 480)
+                        resolutionMap = null;
+                }
+            }
+
+        startActivity(new Intent(FaceppActionActivity.this, OpenglActivity.class)
+                .putExtra("isStartRecorder", isStartRecorder).putExtra("is3DPose", is3DPose)
+                .putExtra("isdebug", isDebug).putExtra("ROIDetect", isROIDetect)
+                .putExtra("is106Points", is106Points).putExtra("isBackCamera", isBackCamera)
+                .putExtra("faceSize", min_face_size).putExtra("interval", detection_interval)
+                .putExtra("resolution", resolutionMap).putExtra("isFaceProperty", isFaceProperty)
+                .putExtra("isOneFaceTrackig", isOneFaceTrackig)
+                .putExtra("trackModel", editItemTexts[4].getText().toString().trim())
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 }

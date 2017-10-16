@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facepp.library.FaceppActionActivity;
 import com.facepp.library.entity.DaoSession;
@@ -108,7 +109,7 @@ public class LoadingActivity extends Activity implements Serializable {
 
                     @Override
                     public void onFailed(int i, byte[] bytes) {
-                        Log.i(TAG, "onFailed: "+new String(bytes));
+                        Toast.makeText(LoadingActivity.this,new String(bytes),Toast.LENGTH_LONG);
                         authState(false);
                     }
 

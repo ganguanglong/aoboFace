@@ -16,17 +16,17 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo.NoActionBar.TranslucentDecor">
         <activity
-            android:name="com.facepp.library.FaceppActionActivity"
+            android:name="com.facepp.library.View.Activity.FaceppActionActivity"
             android:screenOrientation="portrait"></activity>
 
         <activity
-            android:name="com.facepp.library.OpenglActivity"
+            android:name="com.facepp.library.View.Activity.OpenglActivity"
             android:screenOrientation="landscape"></activity>
         <activity
-            android:name="com.facepp.library.DetectActivity"
+            android:name="com.facepp.library.View.Activity.DetectActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name="com.facepp.library.RegisterActivity"
+            android:name="com.facepp.library.View.Activity.RegisterActivity"
             android:screenOrientation="landscape"></activity>
     </application>
 

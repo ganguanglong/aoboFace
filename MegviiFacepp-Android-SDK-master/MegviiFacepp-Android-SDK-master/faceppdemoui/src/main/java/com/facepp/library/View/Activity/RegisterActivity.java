@@ -1,4 +1,4 @@
-package com.facepp.library;
+package com.facepp.library.View.Activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -23,14 +23,15 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facepp.library.entity.AddFace;
-import com.facepp.library.entity.DaoSession;
-import com.facepp.library.entity.DetectFace;
-import com.facepp.library.entity.FaceUser;
-import com.facepp.library.entity.FaceUserDao;
-import com.facepp.library.entity.SearchFace;
-import com.facepp.library.util.GreenDaoUtil;
-import com.facepp.library.util.Util;
+import com.facepp.library.Model.Entity.AddFace;
+import com.facepp.library.Model.Entity.DaoSession;
+import com.facepp.library.Model.Entity.DetectFace;
+import com.facepp.library.Model.Entity.FaceUser;
+import com.facepp.library.Model.Entity.FaceUserDao;
+import com.facepp.library.Model.Entity.SearchFace;
+import com.facepp.library.Model.Util.GreenDaoUtil;
+import com.facepp.library.Model.Util.Util;
+import com.facepp.library.R;
 import com.google.gson.Gson;
 import com.megvii.facepp.sdk.Facepp;
 
@@ -46,23 +47,23 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static com.facepp.library.util.Util.API_KEY;
-import static com.facepp.library.util.Util.API_SECRET;
-import static com.facepp.library.util.Util.MEDIA_TYPE_JPEG;
-import static com.facepp.library.util.Util.OUTER_ID;
-import static com.facepp.library.util.Util.REQUEST_IMAGE_CAPTURE;
-import static com.facepp.library.util.Util.TAG;
-import static com.facepp.library.util.Util.mPicUrl;
-import static com.facepp.library.util.Util.url_add_face;
-import static com.facepp.library.util.Util.mApiKey;
-import static com.facepp.library.util.Util.mApiSecret;
-import static com.facepp.library.util.Util.mAttributes;
-import static com.facepp.library.util.Util.url_base;
-import static com.facepp.library.util.Util.url_detect;
-import static com.facepp.library.util.Util.mFactTokens;
-import static com.facepp.library.util.Util.mImageFile;
-import static com.facepp.library.util.Util.mOuterId;
-import static com.facepp.library.util.Util.url_search;
+import static com.facepp.library.Model.Util.Util.API_KEY;
+import static com.facepp.library.Model.Util.Util.API_SECRET;
+import static com.facepp.library.Model.Util.Util.MEDIA_TYPE_JPEG;
+import static com.facepp.library.Model.Util.Util.OUTER_ID;
+import static com.facepp.library.Model.Util.Util.REQUEST_IMAGE_CAPTURE;
+import static com.facepp.library.Model.Util.Util.TAG;
+import static com.facepp.library.Model.Util.Util.mPicUrl;
+import static com.facepp.library.Model.Util.Util.url_add_face;
+import static com.facepp.library.Model.Util.Util.mApiKey;
+import static com.facepp.library.Model.Util.Util.mApiSecret;
+import static com.facepp.library.Model.Util.Util.mAttributes;
+import static com.facepp.library.Model.Util.Util.url_base;
+import static com.facepp.library.Model.Util.Util.url_detect;
+import static com.facepp.library.Model.Util.Util.mFactTokens;
+import static com.facepp.library.Model.Util.Util.mImageFile;
+import static com.facepp.library.Model.Util.Util.mOuterId;
+import static com.facepp.library.Model.Util.Util.url_search;
 
 /**
  * Created by Administrator on 2017/9/21 0021.

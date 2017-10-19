@@ -1,4 +1,4 @@
-package com.facepp.library;
+package com.facepp.library.View.Activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -22,16 +22,16 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.facepp.library.entity.DaoSession;
-import com.facepp.library.util.ConUtil;
-import com.facepp.library.util.DialogUtil;
-import com.facepp.library.util.ICamera;
+import com.facepp.library.Model.Entity.DaoSession;
+import com.facepp.library.Model.Util.ConUtil;
+import com.facepp.library.Model.Util.DialogUtil;
+import com.facepp.library.Model.Util.ICamera;
+import com.facepp.library.R;
 import com.megvii.facepp.sdk.Facepp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static android.content.ContentValues.TAG;
 import static android.os.Build.VERSION_CODES.M;
 
 public class FaceppActionActivity extends Activity implements OnClickListener {

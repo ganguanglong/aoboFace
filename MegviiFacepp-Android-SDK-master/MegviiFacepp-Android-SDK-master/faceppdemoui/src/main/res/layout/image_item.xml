@@ -9,7 +9,7 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <com.facepp.library.util.AutoRatioImageview
+        <com.facepp.library.Model.Util.AutoRatioImageview
             android:id="@+id/image_item_image"
             android:layout_width="35dip"
             android:layout_height="wrap_content"

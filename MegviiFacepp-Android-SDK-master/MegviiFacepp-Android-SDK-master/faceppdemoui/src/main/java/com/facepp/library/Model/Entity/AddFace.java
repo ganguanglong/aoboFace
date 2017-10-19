@@ -1,6 +1,5 @@
-package com.facepp.library.entity;
+package com.facepp.library.Model.Entity;
 
-import java.lang.annotation.Target;
 import java.util.List;
 
 /**

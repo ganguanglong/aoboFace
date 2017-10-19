@@ -1,4 +1,4 @@
-package com.facepp.library.entity;
+package com.facepp.library.Model.Entity;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

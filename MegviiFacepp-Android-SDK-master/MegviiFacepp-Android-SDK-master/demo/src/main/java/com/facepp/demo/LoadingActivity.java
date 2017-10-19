@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -14,21 +13,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facepp.library.FaceppActionActivity;
-import com.facepp.library.entity.DaoSession;
-import com.facepp.library.util.ConUtil;
-import com.facepp.library.util.DialogUtil;
-import com.facepp.library.util.SharedUtil;
-import com.facepp.library.util.Util;
+import com.facepp.library.View.Activity.FaceppActionActivity;
+import com.facepp.library.Model.Util.ConUtil;
+import com.facepp.library.Model.Util.DialogUtil;
+import com.facepp.library.Model.Util.SharedUtil;
+import com.facepp.library.Model.Util.Util;
 import com.megvii.awesomedemo.facepp.R;
 import com.megvii.facepp.sdk.Facepp;
 import com.megvii.licensemanager.sdk.LicenseManager;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.Locale;
-
-import static com.iflytek.cloud.VerifierResult.TAG;
 //import com.megvii.licensemanager.sdk.LicenseManager;
 
 public class LoadingActivity extends Activity implements Serializable {

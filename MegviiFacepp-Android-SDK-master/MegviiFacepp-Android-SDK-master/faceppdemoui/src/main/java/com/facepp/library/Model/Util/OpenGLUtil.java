@@ -1,4 +1,4 @@
-package com.facepp.library.util;
+package com.facepp.library.Model.Util;
 
 import android.app.ActivityManager;
 import android.content.Context;

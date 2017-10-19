@@ -24,20 +24,20 @@ import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.facepp.library.DetectActivity;
+import com.facepp.library.View.Activity.DetectActivity;
 import com.facepp.library.R;
-import com.facepp.library.util.CameraMatrix;
-import com.facepp.library.util.ConUtil;
-import com.facepp.library.util.DialogUtil;
-import com.facepp.library.util.ICamera;
-import com.facepp.library.util.MediaRecorderUtil;
-import com.facepp.library.util.OpenGLDrawRect;
-import com.facepp.library.util.OpenGLUtil;
-import com.facepp.library.util.PointsMatrix;
-import com.facepp.library.util.Screen;
-import com.facepp.library.util.SensorEventUtil;
-import com.facepp.library.util.Util;
-import com.facepp.library.util.YuvUtil;
+import com.facepp.library.Model.Util.CameraMatrix;
+import com.facepp.library.Model.Util.ConUtil;
+import com.facepp.library.Model.Util.DialogUtil;
+import com.facepp.library.Model.Util.ICamera;
+import com.facepp.library.Model.Util.MediaRecorderUtil;
+import com.facepp.library.Model.Util.OpenGLDrawRect;
+import com.facepp.library.Model.Util.OpenGLUtil;
+import com.facepp.library.Model.Util.PointsMatrix;
+import com.facepp.library.Model.Util.Screen;
+import com.facepp.library.Model.Util.SensorEventUtil;
+import com.facepp.library.Model.Util.Util;
+import com.facepp.library.Model.Util.YuvUtil;
 import com.megvii.facepp.sdk.Facepp;
 
 import java.io.File;
@@ -51,7 +51,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
-import static com.facepp.library.util.Util.TAG;
+import static com.facepp.library.Model.Util.Util.TAG;
 
 public class OldOpenglActivity extends Activity
         implements

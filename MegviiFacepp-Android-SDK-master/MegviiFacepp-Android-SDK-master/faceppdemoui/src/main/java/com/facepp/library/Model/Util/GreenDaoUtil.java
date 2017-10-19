@@ -1,14 +1,13 @@
-package com.facepp.library.util;
+package com.facepp.library.Model.Util;
 
-import android.app.Activity;
 import android.content.Context;
 
-import com.facepp.library.entity.DaoMaster;
-import com.facepp.library.entity.DaoSession;
+import com.facepp.library.Model.Entity.DaoMaster;
+import com.facepp.library.Model.Entity.DaoSession;
 
 import org.greenrobot.greendao.database.Database;
 
-import static com.facepp.library.util.Util.mDataBase;
+import static com.facepp.library.Model.Util.Util.mDataBase;
 
 
 /**

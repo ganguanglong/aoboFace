@@ -1,4 +1,4 @@
-package com.facepp.library.util;
+package com.facepp.library.Model.Util;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -9,8 +9,6 @@ import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.Surface;
 import android.widget.RelativeLayout;
@@ -24,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
-import static android.view.View.LAYOUT_DIRECTION_LTR;
 
 /**
  * 照相机工具类

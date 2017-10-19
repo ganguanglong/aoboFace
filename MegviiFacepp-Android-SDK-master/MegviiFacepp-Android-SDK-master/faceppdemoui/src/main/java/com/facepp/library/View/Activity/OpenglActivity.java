@@ -1,9 +1,7 @@
-package com.facepp.library;
+package com.facepp.library.View.Activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture; /*Surface相关*/
@@ -15,7 +13,6 @@ import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView; /*Surface相关*/
 import android.opengl.GLSurfaceView.Renderer;
-import android.opengl.Matrix;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,25 +23,23 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-import com.facepp.library.entity.DaoMaster;
-import com.facepp.library.entity.DaoSession;
-import com.facepp.library.entity.FaceUser;
-import com.facepp.library.entity.FaceUserDao;
-import com.facepp.library.entity.SearchFace;
-import com.facepp.library.util.CameraMatrix;
-import com.facepp.library.util.ConUtil;
-import com.facepp.library.util.DialogUtil;
-import com.facepp.library.util.GreenDaoUtil;
-import com.facepp.library.util.ICamera;
-import com.facepp.library.util.OpenGLUtil;
-import com.facepp.library.util.Screen;
-import com.facepp.library.util.SensorEventUtil;
-import com.facepp.library.util.Util;
-import com.facepp.library.util.YuvUtil;
+import com.facepp.library.Model.Entity.DaoSession;
+import com.facepp.library.Model.Entity.FaceUser;
+import com.facepp.library.Model.Entity.FaceUserDao;
+import com.facepp.library.Model.Entity.SearchFace;
+import com.facepp.library.Model.Util.CameraMatrix;
+import com.facepp.library.Model.Util.ConUtil;
+import com.facepp.library.Model.Util.DialogUtil;
+import com.facepp.library.Model.Util.GreenDaoUtil;
+import com.facepp.library.Model.Util.ICamera;
+import com.facepp.library.Model.Util.OpenGLUtil;
+import com.facepp.library.Model.Util.Screen;
+import com.facepp.library.Model.Util.SensorEventUtil;
+import com.facepp.library.Model.Util.Util;
+import com.facepp.library.Model.Util.YuvUtil;
+import com.facepp.library.R;
 import com.google.gson.Gson;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
@@ -71,18 +66,18 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
-import static com.facepp.library.util.Util.API_KEY;
-import static com.facepp.library.util.Util.API_SECRET;
-import static com.facepp.library.util.Util.MEDIA_TYPE_JPEG;
-import static com.facepp.library.util.Util.OUTER_ID;
-import static com.facepp.library.util.Util.TAG;
-import static com.facepp.library.util.Util.mApiKey;
-import static com.facepp.library.util.Util.mApiSecret;
-import static com.facepp.library.util.Util.mImageFile;
-import static com.facepp.library.util.Util.mOuterId;
-import static com.facepp.library.util.Util.mPicUrl;
-import static com.facepp.library.util.Util.url_base;
-import static com.facepp.library.util.Util.url_search;
+import static com.facepp.library.Model.Util.Util.API_KEY;
+import static com.facepp.library.Model.Util.Util.API_SECRET;
+import static com.facepp.library.Model.Util.Util.MEDIA_TYPE_JPEG;
+import static com.facepp.library.Model.Util.Util.OUTER_ID;
+import static com.facepp.library.Model.Util.Util.TAG;
+import static com.facepp.library.Model.Util.Util.mApiKey;
+import static com.facepp.library.Model.Util.Util.mApiSecret;
+import static com.facepp.library.Model.Util.Util.mImageFile;
+import static com.facepp.library.Model.Util.Util.mOuterId;
+import static com.facepp.library.Model.Util.Util.mPicUrl;
+import static com.facepp.library.Model.Util.Util.url_base;
+import static com.facepp.library.Model.Util.Util.url_search;
 
 public class OpenglActivity extends Activity
         implements

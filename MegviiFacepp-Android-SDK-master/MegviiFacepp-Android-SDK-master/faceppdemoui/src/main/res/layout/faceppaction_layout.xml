@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         layout="@layout/title_layout" />
 
-    <com.facepp.library.util.AutoRatioImageview
+    <com.facepp.library.Model.Util.AutoRatioImageview
         android:id="@+id/landmark_logo"
         android:layout_width="100dip"
         android:layout_height="wrap_content"

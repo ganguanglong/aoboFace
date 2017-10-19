@@ -1,0 +1,29 @@
+M层
+    👉bean
+    👉Ibean
+    👉Application
+    👉Tool  （类里含有Callback/Listener）
+基于Presenter可以基于业务需要随意ImpP多个不同Contract的P层：
+P层（C层）
+    👉Presenter
+        👉PIml
+    👉Contract  (约定View与Presenter的功能规范)
+        👉CP
+    ○BasePresenter  （用于接收和detach：view、Presenter）
+基于BaseActivity可以绑定多个不同的Presenter的P层：
+P层（C层）
+    👉Presenter
+        👉功能一
+        👉功能二 ...
+            👉CP    (约定View与Presenter的功能规范)
+            👉PIml
+    ○BasePresenter  （用于接收和detach：view、Presenter）
+V层
+    👉View
+        👉Activity
+            ○BaseActivity   （可能需要绑定多个Presenter）
+        👉CustomView
+        👉RecycleView
+        👉XML   （指导layout而已）
+        👉Fragment
+            ○BaseFragment   （可能需要绑定多个Presenter）

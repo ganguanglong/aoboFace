@@ -665,7 +665,7 @@ public class OpenglActivity extends Activity
 
                             if (!isSpeaking) {
                                 getUserName();
-                                startSpeak("您好," + userName);
+                                startSpeak("您好" + userName+",欢迎回来");
                             }
                         }
 

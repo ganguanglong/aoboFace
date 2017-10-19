@@ -1,4 +1,4 @@
-package com.facepp.library.useless;
+package com.facepp.library.Zuseless;
 
 import android.app.Activity;
 import android.content.Intent;

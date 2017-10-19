@@ -241,7 +241,7 @@ public class RegisterActivity extends Activity {
             return;
         }
         getGender();
-        handleFace1(pictureFile);
+        handleFace1();
     }
 
     /**
@@ -324,7 +324,7 @@ public class RegisterActivity extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(RegisterActivity.this, "网络繁忙，请重试！", Toast.LENGTH_SHORT).show();
+                            doRegister();
                         }
                     });
                 } else {
@@ -369,10 +369,9 @@ public class RegisterActivity extends Activity {
      * 2.如果只是一个人的人脸，获取face_token
      * 3.进行是否认识的人 的验证 handleFace2()；
      *
-     * @param pictureFile
      * @return
      */
-    private void handleFace1(File pictureFile) {
+    private void handleFace1() {
         showProgressDialog("验证中", "正在验证照片有效性..，请稍后");
         mFile = new File(Util.FILE_PATH + "Camera" + ".jpg");
         /*实例化复合请求体*/
@@ -451,7 +450,7 @@ public class RegisterActivity extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(RegisterActivity.this, "网络繁忙，请重试！", Toast.LENGTH_SHORT).show();
+                            handleFace1();
                         }
                     });
                 } else {
@@ -554,7 +553,7 @@ public class RegisterActivity extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(RegisterActivity.this, "网络繁忙，请重试！", Toast.LENGTH_SHORT).show();
+                            handleFace2();
                         }
                     });
                 } else {

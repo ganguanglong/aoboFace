@@ -26,6 +26,7 @@ import com.facepp.library.Model.Entity.DaoSession;
 import com.facepp.library.Model.Util.ConUtil;
 import com.facepp.library.Model.Util.DialogUtil;
 import com.facepp.library.Model.Util.ICamera;
+
 import com.facepp.library.R;
 import com.megvii.facepp.sdk.Facepp;
 
@@ -303,7 +304,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
                     }
                 }
 
-            startActivity(new Intent(FaceppActionActivity.this, OpenglActivity.class)
+            startActivity(new Intent(FaceppActionActivity.this, DetectActivity.class)
                     .putExtra("isStartRecorder", isStartRecorder).putExtra("is3DPose", is3DPose)
                     .putExtra("isdebug", isDebug).putExtra("ROIDetect", isROIDetect)
                     .putExtra("is106Points", is106Points).putExtra("isBackCamera", isBackCamera)
@@ -401,7 +402,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
                 }
             }
 
-        startActivity(new Intent(FaceppActionActivity.this, OpenglActivity.class)
+        startActivity(new Intent(FaceppActionActivity.this, DetectActivity.class)
                 .putExtra("isStartRecorder", isStartRecorder).putExtra("is3DPose", is3DPose)
                 .putExtra("isdebug", isDebug).putExtra("ROIDetect", isROIDetect)
                 .putExtra("is106Points", is106Points).putExtra("isBackCamera", isBackCamera)

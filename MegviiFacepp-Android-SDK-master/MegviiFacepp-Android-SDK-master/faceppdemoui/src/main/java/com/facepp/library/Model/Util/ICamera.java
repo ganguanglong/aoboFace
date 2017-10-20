@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import static android.content.ContentValues.TAG;
+import static com.facepp.library.Model.Util.Util.TAG;
 
 /**
  * 照相机工具类
@@ -44,6 +44,7 @@ public class ICamera {
                              HashMap<String, Integer> resolutionMap) {
         try {
             /*这个是平常用的，但是在澳博的平板里好像不适用，所以注释掉*/
+            Log.i(TAG, "isBackCamera: "+isBackCamera);
 //            if (isBackCamera)
 //                cameraId = 0;
 //            else
@@ -75,15 +76,11 @@ public class ICamera {
                     mCamera.getParameters(), width, height);
             cameraWidth = bestPreviewSize.width;
             cameraHeight = bestPreviewSize.height;
-            Log.i(TAG, "openCamera: cameraWidth+cameraHeight"+cameraWidth+"   "+cameraHeight);
             /*defult*/
             params.setPreviewSize(cameraWidth,cameraHeight);
 
             /*获得摄像头的角度（0，90，180，270）*/
             Angle = getCameraAngle(activity);
-            Log.w("ceshi", "Angle==" + Angle);
-            Log.i(TAG, "openCamera: "+mCamera.getParameters());
-
             mCamera.setDisplayOrientation(Angle-180);
             mCamera.setParameters(params);
             /*返回这个摄像头*/
@@ -104,8 +101,6 @@ public class ICamera {
             layout_height = Screen.mHeight;
             layout_width = (int) (layout_height / scale);
         }
-        Log.i(TAG, "getLayoutParam: Screen.mWidth+Screen.mHeight" +Screen.mWidth+""+Screen.mHeight);
-        Log.i(TAG, "getLayoutParam:layout_width + layout_height "+layout_width+"   "+layout_height);
         /*defult*/
 //        RelativeLayout.LayoutParams layout_params = new RelativeLayout.LayoutParams(
 //                layout_width,layout_height);

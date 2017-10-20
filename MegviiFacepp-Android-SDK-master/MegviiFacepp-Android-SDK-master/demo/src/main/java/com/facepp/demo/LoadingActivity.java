@@ -105,6 +105,7 @@ public class LoadingActivity extends Activity implements Serializable {
                     @Override
                     public void onFailed(int i, byte[] bytes) {
                         Toast.makeText(LoadingActivity.this,new String(bytes),Toast.LENGTH_LONG);
+                        System.out.println("联网失败"+new String(bytes));
                         authState(false);
                     }
 

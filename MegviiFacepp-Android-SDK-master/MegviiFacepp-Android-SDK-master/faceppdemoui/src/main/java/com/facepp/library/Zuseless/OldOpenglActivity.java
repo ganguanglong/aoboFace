@@ -24,7 +24,6 @@ import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.facepp.library.View.Activity.DetectActivity;
 import com.facepp.library.R;
 import com.facepp.library.Model.Util.CameraMatrix;
 import com.facepp.library.Model.Util.ConUtil;
@@ -461,13 +460,13 @@ public class OldOpenglActivity extends Activity
             return;
         /*设定isSuccess为true*/
         isSuccess = true;
-        if(!handleFace){
-            Intent startIntent = new Intent(OldOpenglActivity.this,
-                    DetectActivity.class);
-            startIntent.putExtra(Util.RETURN_INFO,fileName);
-            startActivity(startIntent);
-            return;
-        }
+//        if(!handleFace){
+//            Intent startIntent = new Intent(OldOpenglActivity.this,
+//                    DetectActivity.class);
+//            startIntent.putExtra(Util.RETURN_INFO,fileName);
+//            startActivity(startIntent);
+//            return;
+//        }
 
         /*开启一个线程*/
         mHandler.post(new Runnable() {

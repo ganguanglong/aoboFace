@@ -146,7 +146,7 @@ public class RegisterActivity extends Activity {
     }
 
     /**
-     * 作用：打开摄像头，并把图像传入void到iv控件；
+     * 作用：打开摄像头，并把图像传入到iv控件；
      * 流程：
      * 1.拍照
      * 2.拿到拍照结果进行处理 onActivityResult();
@@ -167,6 +167,7 @@ public class RegisterActivity extends Activity {
         // 指定开启系统相机的Action
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
+        intent.putExtra("android.intent.extra.quickCapture",true);
         intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
     }
@@ -392,7 +393,7 @@ public class RegisterActivity extends Activity {
         //请求加入调度
         call.enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call, final IOException e) {
                 if (e.toString().contains("closed") || e.toString().contains("Canceled")) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -405,7 +406,7 @@ public class RegisterActivity extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(RegisterActivity.this, "验证失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "验证失败："+e.toString(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

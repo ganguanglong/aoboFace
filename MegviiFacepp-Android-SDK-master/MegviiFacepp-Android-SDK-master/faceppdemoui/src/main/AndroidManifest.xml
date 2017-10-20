@@ -20,11 +20,8 @@
             android:screenOrientation="portrait"></activity>
 
         <activity
-            android:name="com.facepp.library.View.Activity.OpenglActivity"
-            android:screenOrientation="landscape"></activity>
-        <activity
             android:name="com.facepp.library.View.Activity.DetectActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name="com.facepp.library.View.Activity.RegisterActivity"
             android:screenOrientation="landscape"></activity>

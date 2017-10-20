@@ -44,8 +44,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_first_name"
-            android:text="姓氏"/>
+            android:text="姓氏"
+            android:textSize="20sp"/>
 
         <EditText
             android:id="@+id/et_first_name"
@@ -53,10 +53,14 @@
             android:layout_height="wrap_content"
             android:hint="请输入您的姓氏或称呼"
             android:maxLength="10"
-            android:textSize="16sp">
-            <requestFocus/>
+            android:textSize="20sp">
         </EditText>
-
+        <TextView
+            android:id="@+id/tv_speech_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:textSize="20sp"/>
         <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -73,7 +77,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:layout_marginBottom="5dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal" >
@@ -83,23 +87,17 @@
         <Button
             android:id="@+id/btn_camera"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="拍照"
             android:textSize="20sp" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal" >
+
 
         <Button
             android:id="@+id/btn_reg"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="注册"
             android:textSize="20sp" />

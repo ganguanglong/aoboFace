@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -73,8 +75,8 @@ public class RegisterActivity extends Activity {
 
     private File mFile, pictureFile;
     private final OkHttpClient client = new OkHttpClient();
-    private TextView tv_first_name;
     private EditText et_first_name;
+    private TextView tv_speech_tips;
     private ImageView iv_face;
     private Switch s_gender;
     private Button btn_camera, btn_reg;
@@ -108,8 +110,8 @@ public class RegisterActivity extends Activity {
     }
 
     private void initView() {
-        tv_first_name = (TextView) findViewById(R.id.tv_first_name);
         et_first_name = (EditText) findViewById(R.id.et_first_name);
+        tv_speech_tips = (TextView) findViewById(R.id.tv_speech_tips);
         iv_face = (ImageView) findViewById(R.id.iv_face);
         iv_face.setImageResource(R.drawable.avatar);
         s_gender = (Switch) findViewById(R.id.s_gender);
@@ -125,6 +127,26 @@ public class RegisterActivity extends Activity {
             @Override
             public void onClick(View v) {
                 registerFace();
+            }
+        });
+        et_first_name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().equals("")) {
+                    tv_speech_tips.setText(" ");
+                }else{
+                    tv_speech_tips.setText("将称呼您为：" + s);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }

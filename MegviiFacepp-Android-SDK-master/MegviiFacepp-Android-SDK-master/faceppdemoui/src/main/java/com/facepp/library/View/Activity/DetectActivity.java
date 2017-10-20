@@ -211,7 +211,6 @@ public class DetectActivity extends Activity
     private Camera mCamera;
     private String trackModel;  /*轨迹模式*/
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onResume() {
         Log.i(TAG, "onResume");

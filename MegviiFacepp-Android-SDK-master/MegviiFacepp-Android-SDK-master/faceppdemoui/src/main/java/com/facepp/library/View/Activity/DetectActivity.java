@@ -52,6 +52,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -158,11 +159,16 @@ public class DetectActivity extends Activity
         if (android.os.Build.MODEL.equals("PLK-AL10"))
             printTime = 50;
         /*1.3.2获取一些默认设置，包括是否录制，3d模型，调试模式，区域选择等*/
+//        isBackCamera = getIntent().getBooleanExtra("isBackCamera", false);
+//        trackModel = getIntent().getStringExtra("trackModel");
+//        detection_interval = getIntent().getIntExtra("interval", detection_interval);
+//        resolutionMap = (HashMap<String, Integer>) getIntent().getSerializableExtra("resolution");
+        /*手动设置，不获取FaceppActionActivity的数据*/
+        isBackCamera = false;
+        trackModel = "Normal";
+        detection_interval = 100;
+        resolutionMap = null;
 
-        isBackCamera = getIntent().getBooleanExtra("isBackCamera", false);
-        trackModel = getIntent().getStringExtra("trackModel");
-        detection_interval = getIntent().getIntExtra("interval", detection_interval);
-        resolutionMap = (HashMap<String, Integer>) getIntent().getSerializableExtra("resolution");
 
         facepp = new Facepp();
 
@@ -220,8 +226,6 @@ public class DetectActivity extends Activity
         ConUtil.acquireWakeLock(this);
         /*打开摄像头*/
         mCamera = mICamera.openCamera(isBackCamera, this, resolutionMap);
-        Log.i(TAG, "onResume: mCamera"+mCamera);
-        Log.i(TAG, "onResume: mCamera != null"+(mCamera != null));
         if (mCamera != null) {
             /*返回摄像头的角度*/
             Angle = 360 - mICamera.Angle;

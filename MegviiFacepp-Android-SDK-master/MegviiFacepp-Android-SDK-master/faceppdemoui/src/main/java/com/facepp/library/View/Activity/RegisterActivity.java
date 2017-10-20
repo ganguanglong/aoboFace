@@ -714,7 +714,7 @@ public class RegisterActivity extends Activity {
                 // 监听到返回按钮点击事件
                 Log.i(TAG, "onKeyDown: 监听到了点击返回键");
                 Intent intent = new Intent();
-                intent.setClass(this, FaceppActionActivity.class);
+                intent.setClass(this, DetectActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//If set, and the activity being launched is already running in the current task, then instead of launching a new instance of that activity,all of the other activities on top of it will be closed and this Intent will be delivered to the (now on top) old activity as a new Intent.
                 startActivity(intent);
 

@@ -1,6 +1,8 @@
 package com.facepp.library.View.Activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
@@ -13,17 +15,16 @@ import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView; /*Surface相关*/
 import android.opengl.GLSurfaceView.Renderer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.facepp.library.Model.Entity.DaoSession;
 import com.facepp.library.Model.Entity.FaceUser;
@@ -52,7 +53,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -194,11 +194,11 @@ public class DetectActivity extends Activity
 
         mDialogUtil = new DialogUtil(this);                                                                             /*1.3.7*/
 
-        btn_register= (Button) findViewById(R.id.btn_register);
+        btn_register = (Button) findViewById(R.id.btn_register);
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(DetectActivity.this,RegisterActivity.class));
+                startActivity(new Intent(DetectActivity.this, RegisterActivity.class));
             }
         });
 
@@ -359,7 +359,7 @@ public class DetectActivity extends Activity
         /*设置画面的大小
         * glViewport它负责把视景体截取的图像按照怎样的高和宽显示到屏幕上。
         */
-        GLES20.glViewport(0, 0, width,height );
+        GLES20.glViewport(0, 0, width, height);
 
         /*这一条的计算公式是错的，下面又重新赋值了。*/
         //ratio是比例的意思
@@ -470,6 +470,7 @@ public class DetectActivity extends Activity
     float pitch, yaw, roll;
     boolean sendSearchRequest = false;
     String fileName;
+    long sendRequestTime;
 
     @Override
     public void onPreviewFrame(final byte[] imgData, final Camera camera) {
@@ -502,19 +503,16 @@ public class DetectActivity extends Activity
                 else if (orientation == 3)
                     rotation = 360 - Angle;
                 /*把计算结果设置到摄像头*/
-                Log.i(TAG, "run: "+rotation);
                 setConfig(rotation);
                 /*人脸检测，返回一个faces，是一个face的数组*/
                 //把onPreviewFrame获得的imgData传进去应该是最重要的
 //                final Facepp.Face[] faces = facepp.detect(imgData,height ,width,Facepp.IMAGEMODE_NV21);
 //                fileName = saveToJPEGandOutput(imgData, height,width );
 
-                final Facepp.Face[] faces = facepp.detect(imgData,width, height,Facepp.IMAGEMODE_NV21);
+                final Facepp.Face[] faces = facepp.detect(imgData, width, height, Facepp.IMAGEMODE_NV21);
 
                 /*判断faces返回的数据是否为空*/
                 if (faces != null) {
-                    /*actionMaticsTime设置为当前时间*/
-                    long actionMaticsTime = System.currentTimeMillis();
                     /*新建一个动态数组 和人脸关键点有关的*/
                     confidence = 0.0f;
                     /*faces的长度如果大于等于0*/
@@ -522,10 +520,13 @@ public class DetectActivity extends Activity
                         /*遍历faces*/
                         for (int c = 0; c < faces.length; c++) {
                             if (!sendSearchRequest) {
-//                                updateGallery(mPicUrl);
-                                Log.i(TAG, "face[c]");
+                                sendSearchRequest = true;
+                                sendRequestTime = System.currentTimeMillis();
+                                Log.i(TAG, "run:: sendSearchRequest = true;");
+                                Log.i(TAG, "run:: progressDialog正要开启");
+                                showProgressDialog("检测中", "正在验证人脸");
                             /*保存为JPEG照片*/
-                                fileName = saveToJPEGandOutput(imgData,width, height);
+                                fileName = saveToJPEGandOutput(imgData, width, height);
                                 Log.i(TAG, "检测：保存了一张新照片");
                                 Log.i(TAG, "检测：可以检测");
                                 /*发送请求，看看是否认识的人*/
@@ -570,11 +571,11 @@ public class DetectActivity extends Activity
     private final OkHttpClient client = new OkHttpClient();
     private File mFile;
     private String face_token_new = "", face_token_know = "";
-    long new_token_time = System.currentTimeMillis();
-    long know_token_time = System.currentTimeMillis();
+    long newTokenTime = System.currentTimeMillis();
+    long knowTokenTime = System.currentTimeMillis();
 
     private void sendSearchRequest(String fileName) {
-        sendSearchRequest = true;
+
 
         mFile = new File(Util.FILE_PATH + "Detect" + ".jpg");
 //        mFile = new File(fileName);
@@ -598,69 +599,81 @@ public class DetectActivity extends Activity
             @Override
             public void onFailure(Call call, IOException e) {
                 sendSearchRequest = false;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        Toast.makeText(DetectActivity.this,"验证失败",Toast.LENGTH_SHORT).show();
-                        Log.i(TAG, "验证失败！");
-
-                    }
-                });
+                hideProgressDialog();
+                hideProgressDialog();
+                Log.i(TAG, "onFailure: sendSearchRequest = false;");
+                Log.i(TAG, "onFailure: progressDialog已经关闭");
+                Log.i(TAG, "验证失败！");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                sendSearchRequest = false;
+
 
                 /*如果返回正确的响应值*/
                 if (response.code() == 200) {
                     /*判断这个人是否已注册*/
                     SearchFace searchFace;
                     searchFace = parseWithGson(response, SearchFace.class);
-                    /*如果是同一个face_token，则不用再判断了，浪费时间*/
+
                     if (searchFace == null) {
+                        sendSearchRequest = false;
+                        hideProgressDialog();
                         return;
                     }
                     Log.i(TAG, "onResponse: " + searchFace.getFaces().size());
                     if (searchFace.getFaces().size() == 0) {
+                        sendSearchRequest = false;
+                        hideProgressDialog();
                         return;
                     }
                     if (searchFace.getResults().get(0).getConfidence() < 85) {
                         synchronized (this) {
-                            if (System.currentTimeMillis() - new_token_time > 5000) {
-//                                Log.i(TAG, "sendSearchRequest: 判断，我来清空了一下数值");
-                                new_token_time = System.currentTimeMillis();
-                                face_token_new = "";
-                            }
-//                            Log.i(TAG, "onResponse: 判断，此时getFace_token="+searchFace.getResults().get(0).getFace_token());
-//                            Log.i(TAG, "onResponse: 判断，此时Face_token_new="+face_token_new);
-                            if (searchFace.getResults().get(0).getFace_token().equals(face_token_new)) {
-//                                Log.i(TAG, "新朋友判断:做了一次判断，不可执行下去 ");
-//                                Log.i(TAG, "新朋友判断:因为 "+searchFace.getResults().get(0).getFace_token()+"等于"+face_token_new);
-                                return;
-                            }
+                            /*如果是同一个face_token，则不用再判断了，浪费时间*/
+//                            if (System.currentTimeMillis() - newTokenTime > 5000) {
+////                                Log.i(TAG, "sendSearchRequest: 判断，我来清空了一下数值");
+//                                newTokenTime = System.currentTimeMillis();
+//                                face_token_new = "";
+//                            }
+////                            Log.i(TAG, "onResponse: 判断，此时getFace_token="+searchFace.getResults().get(0).getFace_token());
+////                            Log.i(TAG, "onResponse: 判断，此时Face_token_new="+face_token_new);
+//                            if (searchFace.getResults().get(0).getFace_token().equals(face_token_new)) {
+//                                sendSearchRequest = false;
+//                                hideProgressDialog();
+////                                Log.i(TAG, "新朋友判断:做了一次判断，不可执行下去 ");
+////                                Log.i(TAG, "新朋友判断:因为 "+searchFace.getResults().get(0).getFace_token()+"等于"+face_token_new);
+//                                return;
+//                            }
 //                            Log.i(TAG, "新朋友判断:因为 "+searchFace.getResults().get(0).getFace_token()+"不等于"+face_token_new);
 //                            Log.i(TAG, "新朋友判断:可执行下去，但下次不可执行了");
                             face_token_new = searchFace.getResults().get(0).getFace_token();
 //                            Log.i(TAG, "新朋友判断:，现在 face_token_new="+face_token_new);
                             if (!isSpeaking) {
                                 startSpeak("你好新朋友，请注册");
+
                             }
                         }
                     } else {
                         synchronized (this) {
-                            if (System.currentTimeMillis() - know_token_time > 5000) {
-//                                Log.i(TAG, "sendSearchRequest: 判断，我来清空了一下数值");
-                                know_token_time = System.currentTimeMillis();
-                                face_token_know = "";
-                            }
-//                            Log.i(TAG, "onResponse: 判断，此时getFace_token="+searchFace.getResults().get(0).getFace_token());
-//                            Log.i(TAG, "onResponse: 判断，此时Face_token_new="+face_token_know);
-                            if (searchFace.getResults().get(0).getFace_token().equals(face_token_know)) {
-//                                Log.i(TAG, "老朋友判断:做了一次判断，不可执行下去 ");
-//                                Log.i(TAG, "老朋友判断:因为"+searchFace.getResults().get(0).getFace_token()+"等于"+face_token_know);
-                                return;
-                            }
+                            /*如果是同一个face_token，则不用再判断了，浪费时间*/
+//                            if (sameFaceIn5Seconds()){
+//                                sendSearchRequest = false;
+//                                hideProgressDialog();
+//                            }
+//                            if (System.currentTimeMillis() - knowTokenTime > 5000) {
+////                                Log.i(TAG, "sendSearchRequest: 判断，我来清空了一下数值");
+//                                knowTokenTime = System.currentTimeMillis();
+//                                face_token_know = "";
+//                            }
+////                            Log.i(TAG, "onResponse: 判断，此时getFace_token="+searchFace.getResults().get(0).getFace_token());
+////                            Log.i(TAG, "onResponse: 判断，此时Face_token_new="+face_token_know);
+//                            if (searchFace.getResults().get(0).getFace_token().equals(face_token_know)) {
+//                                sendSearchRequest = false;
+//                                hideProgressDialog();
+////                                Log.i(TAG, "老朋友判断:做了一次判断，不可执行下去 ");
+////                                Log.i(TAG, "老朋友判断:因为"+searchFace.getResults().get(0).getFace_token()+"等于"+face_token_know);
+//                                return;
+//                            }
 //                            Log.i(TAG, "老朋友判断:因为"+searchFace.getResults().get(0).getFace_token()+"不等于"+face_token_know);
 //                            Log.i(TAG, "老朋友判断: 可执行下去，但下次不可执行了");
                             face_token_know = searchFace.getResults().get(0).getFace_token();
@@ -668,7 +681,7 @@ public class DetectActivity extends Activity
 
                             if (!isSpeaking) {
                                 getUserName();
-                                startSpeak("您好" + userName+",欢迎回来！");
+                                startSpeak("您好" + userName + ",欢迎回来！");
                             }
                         }
 
@@ -676,28 +689,16 @@ public class DetectActivity extends Activity
                     }
                     /*如果返回了错误的响应值，例如并发问题，或者超时问题*/
                 } else if (response.code() == 403) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            Toast.makeText(DetectActivity.this,"网络繁忙，请重试！",Toast.LENGTH_SHORT).show();
-                            Log.i(TAG, "网络繁忙，请重试！");
-                        }
-                    });
-                } else
-
-                {
-                    Log.i(TAG, "onResponse:handleFace2 ");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            Toast.makeText(DetectActivity.this,"网络出现问题，请重试！",Toast.LENGTH_SHORT).show();
-                            Log.i(TAG, "网络出现问题，请重试！");
-                        }
-                    });
-
+                    sendSearchRequest = false;
+                    hideProgressDialog();
+                    Log.i(TAG, "onResponse error: sendSearchRequest = false;");
+                    Log.i(TAG, "onResponse error: progressDialog已经关闭");
+                } else {
+                    sendSearchRequest = false;
+                    hideProgressDialog();
+                    Log.i(TAG, "onResponse error: sendSearchRequest = false;");
+                    Log.i(TAG, "onResponse error: progressDialog已经关闭");
                 }
-
-
             }
         });
 
@@ -719,16 +720,27 @@ public class DetectActivity extends Activity
 
     /*为了不被打断，判断是否正在朗读，false代表没有正在朗读，可以进行下一段朗读，true则代表不接受新的朗读请求*/
     private Boolean isSpeaking = false;
+    private long startSpeakTime;
 
     private void startSpeak(String string) {
         mTts.startSpeaking(string, new SynthesizerListener() {
             @Override
             public void onSpeakBegin() {
+                sendSearchRequest = false;
                 isSpeaking = true;
+                hideProgressDialog();
+                Log.i(TAG, "onSpeakBegin: sendSearchRequest = false;");
+                Log.i(TAG, "onSpeakBegin: progressDialog已经关闭");
+                startSpeakTime = System.currentTimeMillis();
+
+                Toast.makeText(DetectActivity.this, "检测耗时：" + (startSpeakTime - sendRequestTime), Toast.LENGTH_SHORT).show();
+
             }
+
             @Override
             public void onBufferProgress(int i, int i1, int i2, String s) {
             }
+
             @Override
             public void onSpeakPaused() {
                 isSpeaking = false;
@@ -769,7 +781,7 @@ public class DetectActivity extends Activity
         /*旋转图像的方向*/
 //        imgData=rotate270(imgData,width,height);
        /*澳博的平板需要旋转180度*/
-        imgData=rotate180(imgData, width, height);
+        imgData = rotate180(imgData, width, height);
 
         File pictureFile = new File(sdRoot, dir + fileName);
 
@@ -781,7 +793,7 @@ public class DetectActivity extends Activity
 //                FileOutputStream filecon = new FileOutputStream(pictureFile);
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(pictureFile));
             //由于旋转了270度，宽高要互换，同理，90度也是
-            YuvImage image = new YuvImage(imgData, ImageFormat.NV21,width ,height , null);   //将NV21 data保存成YuvImage
+            YuvImage image = new YuvImage(imgData, ImageFormat.NV21, width, height, null);   //将NV21 data保存成YuvImage
             //图像压缩
             Log.i(TAG, "照片有了 ");
             image.compressToJpeg(
@@ -887,6 +899,42 @@ public class DetectActivity extends Activity
         facepp.release();
     }
 
+    private ProgressDialog progressDialog;
+
+    /*
+        * 提示加载
+        */
+    public void showProgressDialog(String title, String message) {
+        if (progressDialog == null) {
+
+            progressDialog = ProgressDialog.show(DetectActivity.this,
+                    title, message, true, true);
+        } else if (progressDialog.isShowing()) {
+            progressDialog.setTitle(title);
+            progressDialog.setMessage(message);
+            progressDialog.setCancelable(true);
+        }
+
+        progressDialog.show();
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                client.dispatcher().cancelAll();
+            }
+        });
+
+    }
+
+    /*
+     * 隐藏提示加载
+     */
+    public void hideProgressDialog() {
+
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
+    }
 
 }
 

@@ -13,8 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facepp.library.View.Activity.DetectActivity;
-import com.facepp.library.View.Activity.FaceppActionActivity;
+import com.facepp.library.View.Activity.Detect.DetectActivity;
 import com.facepp.library.Model.Util.ConUtil;
 import com.facepp.library.Model.Util.DialogUtil;
 import com.facepp.library.Model.Util.SharedUtil;
@@ -95,7 +94,7 @@ public class LoadingActivity extends Activity implements Serializable {
         long apiName = Facepp.getApiName();
 
         licenseManager.setAuthTimeBufferMillis(0);
-
+        final Long time =Facepp.getApiExpirationMillis(LoadingActivity.this, ConUtil.getFileContent(LoadingActivity.this, R.raw.megviifacepp_0_4_7_model));
         licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
                 LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
                     @Override
@@ -108,6 +107,7 @@ public class LoadingActivity extends Activity implements Serializable {
                         Toast.makeText(LoadingActivity.this,new String(bytes),Toast.LENGTH_LONG);
                         System.out.println("联网失败"+new String(bytes));
                         authState(false);
+                        System.out.println("联网失败时间:"+time);
                     }
 
                 });

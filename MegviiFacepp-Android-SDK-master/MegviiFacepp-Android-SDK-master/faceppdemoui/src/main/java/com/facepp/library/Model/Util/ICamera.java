@@ -31,7 +31,7 @@ public class ICamera {
     public Camera mCamera;
     public int cameraWidth;
     public int cameraHeight;
-    public int cameraId = 1;// 前置摄像头
+    public int cameraId = 0;// 前置摄像头
     public int Angle;
 
     public ICamera() {
@@ -44,7 +44,6 @@ public class ICamera {
                              HashMap<String, Integer> resolutionMap) {
         try {
             /*这个是平常用的，但是在澳博的平板里好像不适用，所以注释掉*/
-            Log.i(TAG, "isBackCamera: "+isBackCamera);
 //            if (isBackCamera)
 //                cameraId = 0;
 //            else
@@ -81,7 +80,9 @@ public class ICamera {
 
             /*获得摄像头的角度（0，90，180，270）*/
             Angle = getCameraAngle(activity);
-            mCamera.setDisplayOrientation(Angle-180);
+            /*如果是6.0版本，需要angle不能-180，因为会变成负数，此条注释掉，用下一条*/
+//            mCamera.setDisplayOrientation(Angle-180);
+            mCamera.setDisplayOrientation(Angle);
             mCamera.setParameters(params);
             /*返回这个摄像头*/
             return mCamera;

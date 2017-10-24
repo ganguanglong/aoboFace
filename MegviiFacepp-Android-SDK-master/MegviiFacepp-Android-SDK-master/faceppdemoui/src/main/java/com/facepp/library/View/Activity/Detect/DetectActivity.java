@@ -1,4 +1,4 @@
-package com.facepp.library.View.Activity;
+package com.facepp.library.View.Activity.Detect;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -41,6 +41,7 @@ import com.facepp.library.Model.Util.SensorEventUtil;
 import com.facepp.library.Model.Util.Util;
 import com.facepp.library.Model.Util.YuvUtil;
 import com.facepp.library.R;
+import com.facepp.library.View.Activity.RegisterActivity.RegisterActivity;
 import com.google.gson.Gson;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
@@ -575,8 +576,6 @@ public class DetectActivity extends Activity
     long knowTokenTime = System.currentTimeMillis();
 
     private void sendSearchRequest(String fileName) {
-
-
         mFile = new File(Util.FILE_PATH + "Detect" + ".jpg");
 //        mFile = new File(fileName);
         /*实例化复合请求体*/
@@ -599,7 +598,6 @@ public class DetectActivity extends Activity
             @Override
             public void onFailure(Call call, IOException e) {
                 sendSearchRequest = false;
-                hideProgressDialog();
                 hideProgressDialog();
                 Log.i(TAG, "onFailure: sendSearchRequest = false;");
                 Log.i(TAG, "onFailure: progressDialog已经关闭");
@@ -629,7 +627,7 @@ public class DetectActivity extends Activity
                     }
                     if (searchFace.getResults().get(0).getConfidence() < 85) {
                         synchronized (this) {
-                            /*如果是同一个face_token，则不用再判断了，浪费时间*/
+//                            /*如果是同一个face_token，则不用再判断了，浪费时间*/
 //                            if (System.currentTimeMillis() - newTokenTime > 5000) {
 ////                                Log.i(TAG, "sendSearchRequest: 判断，我来清空了一下数值");
 //                                newTokenTime = System.currentTimeMillis();
@@ -651,11 +649,15 @@ public class DetectActivity extends Activity
                             if (!isSpeaking) {
                                 startSpeak("你好新朋友，请注册");
 
+                            }else{
+                                Log.i(TAG, "onResponse: 正在讲话");
+                                sendSearchRequest = false;
+                                hideProgressDialog();
                             }
                         }
                     } else {
                         synchronized (this) {
-                            /*如果是同一个face_token，则不用再判断了，浪费时间*/
+//                            /*如果是同一个face_token，则不用再判断了，浪费时间*/
 //                            if (sameFaceIn5Seconds()){
 //                                sendSearchRequest = false;
 //                                hideProgressDialog();
@@ -682,6 +684,10 @@ public class DetectActivity extends Activity
                             if (!isSpeaking) {
                                 getUserName();
                                 startSpeak("您好" + userName + ",欢迎回来！");
+                            }else{
+                                Log.i(TAG, "onResponse: 正在讲话");
+                                sendSearchRequest = false;
+                                hideProgressDialog();
                             }
                         }
 
@@ -691,13 +697,9 @@ public class DetectActivity extends Activity
                 } else if (response.code() == 403) {
                     sendSearchRequest = false;
                     hideProgressDialog();
-                    Log.i(TAG, "onResponse error: sendSearchRequest = false;");
-                    Log.i(TAG, "onResponse error: progressDialog已经关闭");
                 } else {
                     sendSearchRequest = false;
                     hideProgressDialog();
-                    Log.i(TAG, "onResponse error: sendSearchRequest = false;");
-                    Log.i(TAG, "onResponse error: progressDialog已经关闭");
                 }
             }
         });
@@ -780,8 +782,8 @@ public class DetectActivity extends Activity
         ///storage/emulated/0/ggljpeg/storage/emulated/0/ggljpeg/Detect.jpg:
         /*旋转图像的方向*/
 //        imgData=rotate270(imgData,width,height);
-       /*澳博的平板需要旋转180度*/
-        imgData = rotate180(imgData, width, height);
+       /*澳博的平板需要旋转180度，但是android6.0的不需要旋转180度*/
+//        imgData = rotate180(imgData, width, height);
 
         File pictureFile = new File(sdRoot, dir + fileName);
 

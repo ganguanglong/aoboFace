@@ -1,4 +1,4 @@
-package com.facepp.library.View.Activity;
+package com.facepp.library.View.Activity.RegisterActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -34,6 +34,7 @@ import com.facepp.library.Model.Entity.SearchFace;
 import com.facepp.library.Model.Util.GreenDaoUtil;
 import com.facepp.library.Model.Util.Util;
 import com.facepp.library.R;
+import com.facepp.library.View.Activity.Detect.DetectActivity;
 import com.google.gson.Gson;
 import com.megvii.facepp.sdk.Facepp;
 

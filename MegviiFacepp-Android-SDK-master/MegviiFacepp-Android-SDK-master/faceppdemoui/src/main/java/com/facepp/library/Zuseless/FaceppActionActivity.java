@@ -1,4 +1,4 @@
-package com.facepp.library.View.Activity;
+package com.facepp.library.Zuseless;
 
 import android.Manifest;
 import android.app.Activity;
@@ -28,6 +28,8 @@ import com.facepp.library.Model.Util.DialogUtil;
 import com.facepp.library.Model.Util.ICamera;
 
 import com.facepp.library.R;
+import com.facepp.library.View.Activity.Detect.DetectActivity;
+import com.facepp.library.View.Activity.RegisterActivity.RegisterActivity;
 import com.megvii.facepp.sdk.Facepp;
 
 import java.util.ArrayList;

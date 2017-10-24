@@ -57,16 +57,17 @@ public class CameraMatrix {
 //            1.0f, 0.0f,
 //            0.0f, 0.0f,};
     /*custom*/
-    static float textureVertices[] = {
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f,
-            0.0f, 1.0f,};
 //    static float textureVertices[] = {
-//            0.0f, 0.0f,
-//            0.0f, 1.0f,
 //            1.0f, 1.0f,
-//            1.0f, 0.0f,};
+//            1.0f, 0.0f,
+//            0.0f, 0.0f,
+//            0.0f, 1.0f,};
+    /*android 6.0*/
+    static float textureVertices[] = {
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,};
 
 
     private int mTextureID;

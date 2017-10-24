@@ -41,6 +41,7 @@ import com.facepp.library.Model.Util.SensorEventUtil;
 import com.facepp.library.Model.Util.Util;
 import com.facepp.library.Model.Util.YuvUtil;
 import com.facepp.library.R;
+import com.facepp.library.View.Activity.BaseActivity;
 import com.facepp.library.View.Activity.RegisterActivity.RegisterActivity;
 import com.google.gson.Gson;
 import com.iflytek.cloud.SpeechConstant;
@@ -81,7 +82,7 @@ import static com.facepp.library.Model.Util.Util.mPicUrl;
 import static com.facepp.library.Model.Util.Util.url_base;
 import static com.facepp.library.Model.Util.Util.url_search;
 
-public class DetectActivity extends Activity
+public class DetectActivity extends BaseActivity
         implements
         PreviewCallback,/*返回摄像头的预览数据*/
         Renderer,

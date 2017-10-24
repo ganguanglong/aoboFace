@@ -34,6 +34,7 @@ import com.facepp.library.Model.Entity.SearchFace;
 import com.facepp.library.Model.Util.GreenDaoUtil;
 import com.facepp.library.Model.Util.Util;
 import com.facepp.library.R;
+import com.facepp.library.View.Activity.BaseActivity;
 import com.facepp.library.View.Activity.Detect.DetectActivity;
 import com.google.gson.Gson;
 import com.megvii.facepp.sdk.Facepp;
@@ -72,7 +73,7 @@ import static com.facepp.library.Model.Util.Util.url_search;
  * Created by Administrator on 2017/9/21 0021.
  */
 
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends BaseActivity {
 
     private File mFile, pictureFile;
     private final OkHttpClient client = new OkHttpClient();

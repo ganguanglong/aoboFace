@@ -84,8 +84,7 @@ public class DetectActivity extends BaseActivity
         PreviewCallback,/*返回摄像头的预览数据*/
         Renderer,
         SurfaceTexture.OnFrameAvailableListener,/*SurfaceTexture.OnFrameAvailableListener用于让SurfaceTexture的使用者知道有新数据到来。*/
-        SpeakContract.View,
-        Video2JpegContract.View{
+        SpeakContract.View{
     private int printTime = 31; /*刷新页面的时间时间，31毫秒挺流畅的*/
 
 

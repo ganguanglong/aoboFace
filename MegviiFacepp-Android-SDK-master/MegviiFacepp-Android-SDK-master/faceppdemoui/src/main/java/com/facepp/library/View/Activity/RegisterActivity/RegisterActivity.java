@@ -1,8 +1,5 @@
 package com.facepp.library.View.Activity.RegisterActivity;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,6 +30,9 @@ import com.facepp.library.Model.Entity.FaceUserDao;
 import com.facepp.library.Model.Entity.SearchFace;
 import com.facepp.library.Model.Util.GreenDaoUtil;
 import com.facepp.library.Model.Util.Util;
+import com.facepp.library.Presenter.BasePresenter;
+import com.facepp.library.Presenter.Parse.ParseByGsonPresenter;
+import com.facepp.library.Presenter.Parse.ParseResponseContract;
 import com.facepp.library.R;
 import com.facepp.library.View.Activity.BaseActivity;
 import com.facepp.library.View.Activity.Detect.DetectActivity;
@@ -41,6 +41,8 @@ import com.megvii.facepp.sdk.Facepp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -83,13 +85,18 @@ public class RegisterActivity extends BaseActivity {
     private Switch s_gender;
     private Button btn_camera, btn_reg;
 
-    private Facepp facepp; /*实例化一个Facepp*/
     private String face_token, gender;
     private int age;
-    private boolean isOne = false, isRegister = true;
     private DaoSession daoSession;
     private FaceUserDao mFaceUserDao;
 
+    private ParseResponseContract.Presenter mParseResponsePresenter = new ParseByGsonPresenter();
+    private List<BasePresenter> mPresenterList = new ArrayList<>();
+    @Override
+    protected void initPresenter() {
+        mPresenterList.add((BasePresenter) mParseResponsePresenter);
+        initPresenterList(mPresenterList,this);
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,13 +166,6 @@ public class RegisterActivity extends BaseActivity {
      */
     private void takePicture() {
         openCameraAndShowPhoto();
-    }
-
-    /**
-     * 进一步压缩所拍摄到JPEG格式照片
-     */
-    private void CompressJPEG() {
-
     }
 
     /**
@@ -319,7 +319,7 @@ public class RegisterActivity extends BaseActivity {
                     hideProgress();
                     /*判断这张照片是否已经成功添加*/
                     AddFace addFace;
-                    addFace = parseWithGson(response, AddFace.class);
+                    addFace = mParseResponsePresenter.ParseResponse(response, AddFace.class);
                     if (addFace.getFace_added() == 1) {
 
                         runOnUiThread(new Runnable() {
@@ -443,7 +443,8 @@ public class RegisterActivity extends BaseActivity {
                     hideProgress();
                     /*判断这张照片是否一个人*/
                     DetectFace detectFace;
-                    detectFace = parseWithGson(response, DetectFace.class);
+                    detectFace = mParseResponsePresenter.ParseResponse(response, DetectFace.class);
+
                     if (detectFace.getFaces().size() == 1) {
                         /*清空上一次获取到的face_token*/
                         face_token = "";
@@ -552,7 +553,7 @@ public class RegisterActivity extends BaseActivity {
                     hideProgress();
                     /*判断这张这个人是否已注册*/
                     SearchFace searchFace;
-                    searchFace = parseWithGson(response, SearchFace.class);
+                    searchFace = mParseResponsePresenter.ParseResponse(response, SearchFace.class);
                     if (searchFace.getResults().get(0).getConfidence() < 85) {
                         /*清空上一次获取到的face_token*/
                         Log.i(TAG, "onResponse: 这是一个不认识的人，可以注册");
@@ -641,28 +642,8 @@ public class RegisterActivity extends BaseActivity {
         });
     }
 
-    private <T> T parseWithGson(Response response, Class<T> clazz) throws IOException {
-        Gson mGson = new Gson();
-        T t = null;
-        if (mGson != null) {
-            t = mGson.fromJson(response.body().string(), clazz);
-        }
-        return t;
-    }
 
-    //计算图片的缩放值
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
 
-        if (height > reqHeight || width > reqWidth) {
-            final int heightRatio = Math.round((float) height / (float) reqHeight);
-            final int widthRatio = Math.round((float) width / (float) reqWidth);
-            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
-        }
-        return inSampleSize;
-    }
 
 
     public String getGender() {
@@ -693,8 +674,5 @@ public class RegisterActivity extends BaseActivity {
     }
 
 
-    @Override
-    protected void initPresenter() {
 
-    }
 }

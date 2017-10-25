@@ -1,8 +1,5 @@
 package com.facepp.library.View.Activity.Detect;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
@@ -86,8 +83,10 @@ public class DetectActivity extends BaseActivity
         implements
         PreviewCallback,/*返回摄像头的预览数据*/
         Renderer,
-        SurfaceTexture.OnFrameAvailableListener /*SurfaceTexture.OnFrameAvailableListener用于让SurfaceTexture的使用者知道有新数据到来。*/ {
+        SurfaceTexture.OnFrameAvailableListener/*SurfaceTexture.OnFrameAvailableListener用于让SurfaceTexture的使用者知道有新数据到来。*/
+        {
     private int printTime = 31; /*刷新页面的时间时间，31毫秒挺流畅的*/
+
 
     Handler timeHandle = new Handler() {
         @Override
@@ -111,14 +110,13 @@ public class DetectActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        /*1.1屏幕初始化*/
+        /*屏幕初始化*/
         Screen.initialize(this);
-        /*1.2设置布局*/
+        /*设置布局*/
         setContentView(R.layout.activity_opengl);
-        /*1.3view初始化*/
+        /*view初始化*/
         init();
-        /*初始化语音*/
-        initVoice();
+
         /*get GreenDao*/
         initGreenDao();
     }
@@ -128,17 +126,6 @@ public class DetectActivity extends BaseActivity
     private void initGreenDao() {
         daoSession = GreenDaoUtil.getDaoSession(this);
         mFaceUserDao = daoSession.getFaceUserDao();
-    }
-
-    private SpeechSynthesizer mTts;
-
-    private void initVoice() {
-        mTts = SpeechSynthesizer.createSynthesizer(this, null);
-        mTts.setParameter(SpeechConstant.VOICE_NAME, "xiaoyan");
-        mTts.setParameter(SpeechConstant.SPEED, "55");
-        mTts.setParameter(SpeechConstant.VOLUME, "80");
-        mTts.setParameter(SpeechConstant.ENGINE_MODE, SpeechConstant.MODE_AUTO);
-        mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
     }
 
     private Facepp facepp; /*实例化一个Facepp*/
@@ -224,7 +211,6 @@ public class DetectActivity extends BaseActivity
         Log.i(TAG, "onResume");
         super.onResume();
         /*这个工具类的方法是用于保持屏幕常量，可以是灰的*/
-
         ConUtil.acquireWakeLock(this);
         /*打开摄像头*/
         mCamera = mICamera.openCamera(isBackCamera, this, resolutionMap);
@@ -526,7 +512,7 @@ public class DetectActivity extends BaseActivity
                                 sendRequestTime = System.currentTimeMillis();
                                 Log.i(TAG, "run:: sendSearchRequest = true;");
                                 Log.i(TAG, "run:: progressDialog正要开启");
-                                showProgressDialog("检测中", "正在验证人脸");
+                                showProgress("检测中", "正在验证人脸");
                             /*保存为JPEG照片*/
                                 fileName = saveToJPEGandOutput(imgData, width, height);
                                 Log.i(TAG, "检测：保存了一张新照片");
@@ -599,7 +585,7 @@ public class DetectActivity extends BaseActivity
             @Override
             public void onFailure(Call call, IOException e) {
                 sendSearchRequest = false;
-                hideProgressDialog();
+                hideProgress();
                 Log.i(TAG, "onFailure: sendSearchRequest = false;");
                 Log.i(TAG, "onFailure: progressDialog已经关闭");
                 Log.i(TAG, "验证失败！");
@@ -617,13 +603,13 @@ public class DetectActivity extends BaseActivity
 
                     if (searchFace == null) {
                         sendSearchRequest = false;
-                        hideProgressDialog();
+                        hideProgress();
                         return;
                     }
                     Log.i(TAG, "onResponse: " + searchFace.getFaces().size());
                     if (searchFace.getFaces().size() == 0) {
                         sendSearchRequest = false;
-                        hideProgressDialog();
+                        hideProgress();
                         return;
                     }
                     if (searchFace.getResults().get(0).getConfidence() < 85) {
@@ -650,10 +636,10 @@ public class DetectActivity extends BaseActivity
                             if (!isSpeaking) {
                                 startSpeak("你好新朋友，请注册");
 
-                            }else{
+                            } else {
                                 Log.i(TAG, "onResponse: 正在讲话");
                                 sendSearchRequest = false;
-                                hideProgressDialog();
+                                hideProgress();
                             }
                         }
                     } else {
@@ -685,10 +671,10 @@ public class DetectActivity extends BaseActivity
                             if (!isSpeaking) {
                                 getUserName();
                                 startSpeak("您好" + userName + ",欢迎回来！");
-                            }else{
+                            } else {
                                 Log.i(TAG, "onResponse: 正在讲话");
                                 sendSearchRequest = false;
-                                hideProgressDialog();
+                                hideProgress();
                             }
                         }
 
@@ -697,10 +683,10 @@ public class DetectActivity extends BaseActivity
                     /*如果返回了错误的响应值，例如并发问题，或者超时问题*/
                 } else if (response.code() == 403) {
                     sendSearchRequest = false;
-                    hideProgressDialog();
+                    hideProgress();
                 } else {
                     sendSearchRequest = false;
-                    hideProgressDialog();
+                    hideProgress();
                 }
             }
         });
@@ -731,13 +717,12 @@ public class DetectActivity extends BaseActivity
             public void onSpeakBegin() {
                 sendSearchRequest = false;
                 isSpeaking = true;
-                hideProgressDialog();
+                hideProgress();
                 Log.i(TAG, "onSpeakBegin: sendSearchRequest = false;");
                 Log.i(TAG, "onSpeakBegin: progressDialog已经关闭");
                 startSpeakTime = System.currentTimeMillis();
 
-                Toast.makeText(DetectActivity.this, "检测耗时：" + (startSpeakTime - sendRequestTime), Toast.LENGTH_SHORT).show();
-
+                toast("检测耗时：" + (startSpeakTime - sendRequestTime),Toast.LENGTH_SHORT);
             }
 
             @Override
@@ -782,8 +767,8 @@ public class DetectActivity extends BaseActivity
         }
         ///storage/emulated/0/ggljpeg/storage/emulated/0/ggljpeg/Detect.jpg:
         /*旋转图像的方向*/
-//        imgData=rotate270(imgData,width,height);
-       /*澳博的平板需要旋转180度，但是android6.0的不需要旋转180度*/
+//        imgData = rotate270(imgData,width,height);
+        /*澳博的平板需要旋转180度，但是android6.0的不需要旋转180度*/
 //        imgData = rotate180(imgData, width, height);
 
         File pictureFile = new File(sdRoot, dir + fileName);
@@ -891,8 +876,11 @@ public class DetectActivity extends BaseActivity
         mCamera = null;
 
         timeHandle.removeMessages(0);
+    }
 
-//        finish();
+    @Override
+    protected void initPresenter() {
+
     }
 
     @Override
@@ -902,42 +890,6 @@ public class DetectActivity extends BaseActivity
         facepp.release();
     }
 
-    private ProgressDialog progressDialog;
-
-    /*
-        * 提示加载
-        */
-    public void showProgressDialog(String title, String message) {
-        if (progressDialog == null) {
-
-            progressDialog = ProgressDialog.show(DetectActivity.this,
-                    title, message, true, true);
-        } else if (progressDialog.isShowing()) {
-            progressDialog.setTitle(title);
-            progressDialog.setMessage(message);
-            progressDialog.setCancelable(true);
-        }
-
-        progressDialog.show();
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                client.dispatcher().cancelAll();
-            }
-        });
-
-    }
-
-    /*
-     * 隐藏提示加载
-     */
-    public void hideProgressDialog() {
-
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-
-    }
 
 }
 

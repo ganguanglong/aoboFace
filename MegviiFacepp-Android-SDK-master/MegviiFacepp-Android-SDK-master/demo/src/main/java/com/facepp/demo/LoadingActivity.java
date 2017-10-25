@@ -13,11 +13,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facepp.library.View.Activity.Detect.DetectActivity;
 import com.facepp.library.Model.Util.ConUtil;
 import com.facepp.library.Model.Util.DialogUtil;
 import com.facepp.library.Model.Util.SharedUtil;
 import com.facepp.library.Model.Util.Util;
+import com.facepp.library.View.Activity.Detect.DetectActivity;
 import com.megvii.awesomedemo.facepp.R;
 import com.megvii.facepp.sdk.Facepp;
 import com.megvii.licensemanager.sdk.LicenseManager;

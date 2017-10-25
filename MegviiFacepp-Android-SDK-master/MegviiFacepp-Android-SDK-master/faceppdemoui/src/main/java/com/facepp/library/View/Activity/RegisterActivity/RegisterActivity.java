@@ -86,7 +86,6 @@ public class RegisterActivity extends BaseActivity {
     private Facepp facepp; /*实例化一个Facepp*/
     private String face_token, gender;
     private int age;
-    private ProgressDialog progressDialog;
     private boolean isOne = false, isRegister = true;
     private DaoSession daoSession;
     private FaceUserDao mFaceUserDao;
@@ -302,7 +301,7 @@ public class RegisterActivity extends BaseActivity {
                         }
                     });
                 } else {
-                    hideProgressDialog();
+                    hideProgress();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -317,7 +316,7 @@ public class RegisterActivity extends BaseActivity {
 
                 /*如果返回正确的响应值*/
                 if (response.code() == 200) {
-                    hideProgressDialog();
+                    hideProgress();
                     /*判断这张照片是否已经成功添加*/
                     AddFace addFace;
                     addFace = parseWithGson(response, AddFace.class);
@@ -334,7 +333,7 @@ public class RegisterActivity extends BaseActivity {
                             }
                         });
                     } else {
-                        hideProgressDialog();
+                        hideProgress();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -345,7 +344,7 @@ public class RegisterActivity extends BaseActivity {
                     }
                     /*如果返回了错误的响应值，例如并发问题，或者超时问题*/
                 } else if (response.code() == 403) {
-                    hideProgressDialog();
+                    hideProgress();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -353,7 +352,7 @@ public class RegisterActivity extends BaseActivity {
                         }
                     });
                 } else {
-                    hideProgressDialog();
+                    hideProgress();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -397,7 +396,7 @@ public class RegisterActivity extends BaseActivity {
      * @return
      */
     private void handleFace1() {
-        showProgressDialog("验证中", "正在验证照片有效性..，请稍后");
+        showProgress("验证中", "正在验证照片有效性..，请稍后");
         mFile = new File(Util.FILE_PATH + "Camera" + ".jpg");
         /*实例化复合请求体*/
         MultipartBody mMultipartBody = new MultipartBody.Builder()
@@ -426,7 +425,7 @@ public class RegisterActivity extends BaseActivity {
                         }
                     });
                 } else {
-                    hideProgressDialog();
+                    hideProgress();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -441,7 +440,7 @@ public class RegisterActivity extends BaseActivity {
 
                 /*如果返回正确的响应值*/
                 if (response.code() == 200) {
-                    hideProgressDialog();
+                    hideProgress();
                     /*判断这张照片是否一个人*/
                     DetectFace detectFace;
                     detectFace = parseWithGson(response, DetectFace.class);
@@ -460,7 +459,7 @@ public class RegisterActivity extends BaseActivity {
                             }
                         });
                     } else {
-                        hideProgressDialog();
+                        hideProgress();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -471,7 +470,7 @@ public class RegisterActivity extends BaseActivity {
                     }
                     /*如果返回了错误的响应值，例如并发问题，或者超时问题*/
                 } else if (response.code() == 403) {
-                    hideProgressDialog();
+                    hideProgress();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -479,7 +478,7 @@ public class RegisterActivity extends BaseActivity {
                         }
                     });
                 } else {
-                    hideProgressDialog();
+                    hideProgress();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -505,7 +504,7 @@ public class RegisterActivity extends BaseActivity {
     String error;
 
     private void handleFace2() {
-        showProgressDialog("验证中", "正在验证照片有效性..，请稍后");
+        showProgress("验证中", "正在验证照片有效性..，请稍后");
         mFile = new File(Util.FILE_PATH + "Camera" + ".jpg");
         /*实例化复合请求体*/
         MultipartBody mMultipartBody = new MultipartBody.Builder()
@@ -535,7 +534,7 @@ public class RegisterActivity extends BaseActivity {
                         }
                     });
                 } else {
-                    hideProgressDialog();
+                    hideProgress();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -550,7 +549,7 @@ public class RegisterActivity extends BaseActivity {
 
                 /*如果返回正确的响应值*/
                 if (response.code() == 200) {
-                    hideProgressDialog();
+                    hideProgress();
                     /*判断这张这个人是否已注册*/
                     SearchFace searchFace;
                     searchFace = parseWithGson(response, SearchFace.class);
@@ -560,7 +559,7 @@ public class RegisterActivity extends BaseActivity {
                         doRegister();
 
                     } else {
-                        hideProgressDialog();
+                        hideProgress();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -574,7 +573,7 @@ public class RegisterActivity extends BaseActivity {
                     doRegister();
                     /*如果返回了错误的响应值，例如并发问题，或者超时问题*/
                 } else if (response.code() == 403) {
-                    hideProgressDialog();
+                    hideProgress();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -583,7 +582,7 @@ public class RegisterActivity extends BaseActivity {
                     });
                 } else {
                     error = response.body().string();
-                    hideProgressDialog();
+                    hideProgress();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -665,40 +664,6 @@ public class RegisterActivity extends BaseActivity {
         return inSampleSize;
     }
 
-    /*
-    * 提示加载
-    */
-    public void showProgressDialog(String title, String message) {
-        if (progressDialog == null) {
-
-            progressDialog = ProgressDialog.show(RegisterActivity.this,
-                    title, message, true, true);
-        } else if (progressDialog.isShowing()) {
-            progressDialog.setTitle(title);
-            progressDialog.setMessage(message);
-            progressDialog.setCancelable(true);
-        }
-
-        progressDialog.show();
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                client.dispatcher().cancelAll();
-            }
-        });
-
-    }
-
-    /*
-     * 隐藏提示加载
-     */
-    public void hideProgressDialog() {
-
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-
-    }
 
     public String getGender() {
         if (s_gender.isChecked()) {
@@ -728,4 +693,8 @@ public class RegisterActivity extends BaseActivity {
     }
 
 
+    @Override
+    protected void initPresenter() {
+
+    }
 }

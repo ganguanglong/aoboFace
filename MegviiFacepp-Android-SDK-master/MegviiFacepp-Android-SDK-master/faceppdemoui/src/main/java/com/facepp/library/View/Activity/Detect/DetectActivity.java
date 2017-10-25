@@ -37,14 +37,17 @@ import com.facepp.library.Model.Util.Screen;
 import com.facepp.library.Model.Util.SensorEventUtil;
 import com.facepp.library.Model.Util.Util;
 import com.facepp.library.Model.Util.YuvUtil;
+import com.facepp.library.Presenter.BasePresenter;
+import com.facepp.library.Presenter.CompressContract.Save2JpegPresenterForAB1;
+import com.facepp.library.Presenter.CompressContract.Save2JpegPresenterForAB2;
+import com.facepp.library.Presenter.CompressContract.Video2JpegContract;
+import com.facepp.library.Presenter.Speak.SpeakContract;
+import com.facepp.library.Presenter.Speak.SpeakByiFlyPresenter;
 import com.facepp.library.R;
 import com.facepp.library.View.Activity.BaseActivity;
 import com.facepp.library.View.Activity.RegisterActivity.RegisterActivity;
 import com.google.gson.Gson;
-import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
-import com.iflytek.cloud.SpeechSynthesizer;
-import com.iflytek.cloud.SynthesizerListener;
 import com.megvii.facepp.sdk.Facepp;
 
 
@@ -52,7 +55,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -83,8 +88,9 @@ public class DetectActivity extends BaseActivity
         implements
         PreviewCallback,/*返回摄像头的预览数据*/
         Renderer,
-        SurfaceTexture.OnFrameAvailableListener/*SurfaceTexture.OnFrameAvailableListener用于让SurfaceTexture的使用者知道有新数据到来。*/
-        {
+        SurfaceTexture.OnFrameAvailableListener,/*SurfaceTexture.OnFrameAvailableListener用于让SurfaceTexture的使用者知道有新数据到来。*/
+        SpeakContract.View,
+        Video2JpegContract.View{
     private int printTime = 31; /*刷新页面的时间时间，31毫秒挺流畅的*/
 
 
@@ -105,7 +111,16 @@ public class DetectActivity extends BaseActivity
         }
     };
     private FaceUserDao mFaceUserDao;
+    private SpeakContract.Presenter mSpeakPresenter = new SpeakByiFlyPresenter();
+    private Video2JpegContract.Presenter mSave2JpegPresenter = new Save2JpegPresenterForAB2();
+    private List<BasePresenter> mPresenterList = new ArrayList<>();
 
+    @Override
+    protected void initPresenter() {
+        mPresenterList.add((BasePresenter) mSpeakPresenter);
+        mPresenterList.add((BasePresenter) mSave2JpegPresenter);
+        initPresenterList(mPresenterList,this);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
@@ -116,7 +131,10 @@ public class DetectActivity extends BaseActivity
         setContentView(R.layout.activity_opengl);
         /*view初始化*/
         init();
-
+        /*presenter初始化*/
+        initPresenter();
+        /*初始化语音*/
+        mSpeakPresenter.registerVoice(this);
         /*get GreenDao*/
         initGreenDao();
     }
@@ -514,7 +532,7 @@ public class DetectActivity extends BaseActivity
                                 Log.i(TAG, "run:: progressDialog正要开启");
                                 showProgress("检测中", "正在验证人脸");
                             /*保存为JPEG照片*/
-                                fileName = saveToJPEGandOutput(imgData, width, height);
+                                fileName = mSave2JpegPresenter.save2Jpeg(imgData, Util.detectFileName,width, height);
                                 Log.i(TAG, "检测：保存了一张新照片");
                                 Log.i(TAG, "检测：可以检测");
                                 /*发送请求，看看是否认识的人*/
@@ -634,10 +652,9 @@ public class DetectActivity extends BaseActivity
                             face_token_new = searchFace.getResults().get(0).getFace_token();
 //                            Log.i(TAG, "新朋友判断:，现在 face_token_new="+face_token_new);
                             if (!isSpeaking) {
-                                startSpeak("你好新朋友，请注册");
+                                mSpeakPresenter.Speak("你好新朋友，请注册");
 
                             } else {
-                                Log.i(TAG, "onResponse: 正在讲话");
                                 sendSearchRequest = false;
                                 hideProgress();
                             }
@@ -670,15 +687,12 @@ public class DetectActivity extends BaseActivity
 
                             if (!isSpeaking) {
                                 getUserName();
-                                startSpeak("您好" + userName + ",欢迎回来！");
+                                mSpeakPresenter.Speak("您好" + userName + ",欢迎回来！");
                             } else {
-                                Log.i(TAG, "onResponse: 正在讲话");
                                 sendSearchRequest = false;
                                 hideProgress();
                             }
                         }
-
-
                     }
                     /*如果返回了错误的响应值，例如并发问题，或者超时问题*/
                 } else if (response.code() == 403) {
@@ -696,115 +710,14 @@ public class DetectActivity extends BaseActivity
     private String userName;
 
     private void getUserName() {
-//         /*全部查询*/
-//        List<FaceUser> mList = mFaceUserDao.queryBuilder().listLazy();
-//        for (FaceUser u : mList) {
-//            Log.i("ggl", "onCreate: " + u.getName() + "....." + u.getFaceToken() + "....." + u.getAge() + "..." + u.getGender());
-
         /*条件查询*/
         FaceUser user = mFaceUserDao.queryBuilder().where(FaceUserDao.Properties.FaceToken.eq(face_token_know)).build().unique();
         userName = user.getName();
-
     }
 
     /*为了不被打断，判断是否正在朗读，false代表没有正在朗读，可以进行下一段朗读，true则代表不接受新的朗读请求*/
     private Boolean isSpeaking = false;
     private long startSpeakTime;
-
-    private void startSpeak(String string) {
-        mTts.startSpeaking(string, new SynthesizerListener() {
-            @Override
-            public void onSpeakBegin() {
-                sendSearchRequest = false;
-                isSpeaking = true;
-                hideProgress();
-                Log.i(TAG, "onSpeakBegin: sendSearchRequest = false;");
-                Log.i(TAG, "onSpeakBegin: progressDialog已经关闭");
-                startSpeakTime = System.currentTimeMillis();
-
-                toast("检测耗时：" + (startSpeakTime - sendRequestTime),Toast.LENGTH_SHORT);
-            }
-
-            @Override
-            public void onBufferProgress(int i, int i1, int i2, String s) {
-            }
-
-            @Override
-            public void onSpeakPaused() {
-                isSpeaking = false;
-            }
-
-            @Override
-            public void onSpeakResumed() {
-                isSpeaking = true;
-            }
-
-            @Override
-            public void onSpeakProgress(int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onCompleted(SpeechError speechError) {
-                isSpeaking = false;
-            }
-
-            @Override
-            public void onEvent(int i, int i1, int i2, Bundle bundle) {
-
-            }
-        });
-    }
-
-    private String saveToJPEGandOutput(byte[] imgData, int width, int height) {
-//        String fileName = System.currentTimeMillis() + ".jpg";  //jpeg文件名定义
-        String fileName = "Detect" + ".jpg";  //jpeg文件名定义
-        File sdRoot = Environment.getExternalStorageDirectory();    //系统路径
-        String dir = mPicUrl;   //文件夹名
-        File mkDir = new File(sdRoot, dir);
-        if (!mkDir.exists()) {
-            mkDir.mkdirs();   //目录不存在，则创建
-        }
-        ///storage/emulated/0/ggljpeg/storage/emulated/0/ggljpeg/Detect.jpg:
-        /*旋转图像的方向*/
-//        imgData = rotate270(imgData,width,height);
-        /*澳博的平板需要旋转180度，但是android6.0的不需要旋转180度*/
-//        imgData = rotate180(imgData, width, height);
-
-        File pictureFile = new File(sdRoot, dir + fileName);
-
-        try {
-            if (pictureFile.exists()) {
-                pictureFile.delete();
-                pictureFile.createNewFile();
-            }
-//                FileOutputStream filecon = new FileOutputStream(pictureFile);
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(pictureFile));
-            //由于旋转了270度，宽高要互换，同理，90度也是
-            YuvImage image = new YuvImage(imgData, ImageFormat.NV21, width, height, null);   //将NV21 data保存成YuvImage
-            //图像压缩
-            Log.i(TAG, "照片有了 ");
-            image.compressToJpeg(
-                    new Rect(0, 0, image.getWidth(), image.getHeight()),
-                    70, bos);   // 将NV21格式图片，以质量70压缩成Jpeg，并得到JPEG数据流
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Log.i(TAG, "检测： " + mkDir + "/" + fileName);
-        return mkDir + "/" + fileName;
-    }
-
-    private byte[] rotate180(byte[] imgData, int width, int height) {
-        byte[] Data = YuvUtil.rotateYUV420spRotate180(imgData, width, height);
-        return Data;
-    }
-
-    private byte[] rotate270(byte[] imgData, int width, int height) {
-        byte[] Data = YuvUtil.rotateYUV420Degree270(imgData, width, height);
-        return Data;
-    }
 
     private <T> T parseWithGson(Response response, Class<T> clazz) throws IOException {
         Gson mGson = new Gson();
@@ -814,42 +727,6 @@ public class DetectActivity extends BaseActivity
 
         }
         return t;
-    }
-
-    /**
-     * 作用：对返回结果进行处理
-     * 流程：
-     * 1.判断是否正确的返回结果
-     * 2.判断是否是认识的人
-     * 2.1如果是：
-     * 2.1.1：给出提示。(暂用Toast）
-     * 2.1.2：返回这个face_token所关联的图片名。getFileNameFromDB();
-     * 2.1.3：通过图片名把图片呈现出来 showPhoto();
-     * 2.2如果不是，给出提示。（暂用Toast）
-     */
-    private void handelSearchResult() {
-//        getPhotoFromDB("");
-    }
-
-    /**
-     * 刷新媒体库
-     */
-    private void updateGallery(String infoString) {
-        MediaScannerConnection.scanFile(this, new String[]{infoString}, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {
-
-                    }
-                });
-    }
-
-    /**
-     * 作用：通过face_token,查找数据库，并返回关联的图片名
-     */
-    private String getPhotoFromDB(String face_token) {
-        return null;
     }
 
     /**
@@ -879,18 +756,38 @@ public class DetectActivity extends BaseActivity
     }
 
     @Override
-    protected void initPresenter() {
-
-    }
-
-    @Override
     protected void onDestroy() {
         Log.i(TAG, "onDestroy");
         super.onDestroy();
         facepp.release();
     }
 
+    /*语音回调*/
+    @Override
+    public void onSpeakBegin() {
+        sendSearchRequest = false;
+        isSpeaking = true;
+        hideProgress();
+        startSpeakTime = System.currentTimeMillis();
+        toast("检测耗时：" + (startSpeakTime - sendRequestTime), Toast.LENGTH_SHORT);
+    }
 
+    @Override
+    public void onSpeakPaused() {
+        isSpeaking = false;
+    }
+
+    @Override
+    public void onSpeakResumed() {
+        isSpeaking = true;
+
+    }
+
+    @Override
+    public void onCompleted() {
+        isSpeaking = false;
+
+    }
 }
 
 

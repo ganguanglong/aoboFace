@@ -37,6 +37,7 @@ public class Util {
     //返回人脸属性
     public static final String mAttributes ="return_attributes";
 
+    public static final String detectFileName = "Detect.jpg";
     //faceSet outer_id
     //abtest
 

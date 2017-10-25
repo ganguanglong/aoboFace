@@ -25,6 +25,6 @@ public interface SpeakContract {
 
         void setParameter(String str,String str1);
 
-        void Speak(String str);
+        void speak(String str);
     }
 }

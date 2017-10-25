@@ -1,19 +1,13 @@
 package com.facepp.library.View.Activity.Detect;
 
 import android.content.Intent;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.SurfaceTexture; /*Surface相关*/
-import android.graphics.YuvImage;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.opengl.GLES20;
-import android.opengl.GLSurfaceView; /*Surface相关*/
+import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -41,13 +35,12 @@ import com.facepp.library.Presenter.CompressContract.Save2JpegPresenterForAB2;
 import com.facepp.library.Presenter.CompressContract.Video2JpegContract;
 import com.facepp.library.Presenter.Parse.ParseByGsonPresenter;
 import com.facepp.library.Presenter.Parse.ParseResponseContract;
-import com.facepp.library.Presenter.Speak.SpeakContract;
 import com.facepp.library.Presenter.Speak.SpeakByiFlyPresenter;
+import com.facepp.library.Presenter.Speak.SpeakContract;
 import com.facepp.library.R;
 import com.facepp.library.View.Activity.BaseActivity;
 import com.facepp.library.View.Activity.RegisterActivity.RegisterActivity;
 import com.megvii.facepp.sdk.Facepp;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -84,7 +77,7 @@ public class DetectActivity extends BaseActivity
         PreviewCallback,/*返回摄像头的预览数据*/
         Renderer,
         SurfaceTexture.OnFrameAvailableListener,/*SurfaceTexture.OnFrameAvailableListener用于让SurfaceTexture的使用者知道有新数据到来。*/
-        SpeakContract.View{
+        SpeakContract.View {
     private int printTime = 31; /*刷新页面的时间时间，31毫秒挺流畅的*/
 
 
@@ -115,8 +108,9 @@ public class DetectActivity extends BaseActivity
         mPresenterList.add((BasePresenter) mSpeakPresenter);
         mPresenterList.add((BasePresenter) mSave2JpegPresenter);
         mPresenterList.add((BasePresenter) mParseResponsePresenter);
-        initPresenterList(mPresenterList,this);
+        initPresenterList(mPresenterList, this);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
@@ -524,7 +518,7 @@ public class DetectActivity extends BaseActivity
                                 Log.i(TAG, "run:: progressDialog正要开启");
                                 showProgress("检测中", "正在验证人脸");
                             /*保存为JPEG照片*/
-                                fileName = mSave2JpegPresenter.save2Jpeg(imgData, Util.detectFileName,width, height);
+                                fileName = mSave2JpegPresenter.save2Jpeg(imgData, Util.detectFileName, width, height);
                                 Log.i(TAG, "检测：保存了一张新照片");
                                 Log.i(TAG, "检测：可以检测");
                                 /*发送请求，看看是否认识的人*/
@@ -596,15 +590,10 @@ public class DetectActivity extends BaseActivity
             public void onFailure(Call call, IOException e) {
                 sendSearchRequest = false;
                 hideProgress();
-                Log.i(TAG, "onFailure: sendSearchRequest = false;");
-                Log.i(TAG, "onFailure: progressDialog已经关闭");
-                Log.i(TAG, "验证失败！");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
-
                 /*如果返回正确的响应值*/
                 if (response.code() == 200) {
                     /*判断这个人是否已注册*/
@@ -643,7 +632,7 @@ public class DetectActivity extends BaseActivity
                             face_token_new = searchFace.getResults().get(0).getFace_token();
 //                            Log.i(TAG, "新朋友判断:，现在 face_token_new="+face_token_new);
                             if (!isSpeaking) {
-                                mSpeakPresenter.Speak("你好新朋友，请注册");
+                                mSpeakPresenter.speak("你好新朋友，请注册");
 
                             } else {
                                 sendSearchRequest = false;
@@ -678,7 +667,7 @@ public class DetectActivity extends BaseActivity
 
                             if (!isSpeaking) {
                                 getUserName();
-                                mSpeakPresenter.Speak("您好" + userName + ",欢迎回来！");
+                                mSpeakPresenter.speak("您好" + userName + ",欢迎回来！");
                             } else {
                                 sendSearchRequest = false;
                                 hideProgress();
@@ -689,6 +678,13 @@ public class DetectActivity extends BaseActivity
                 } else if (response.code() == 403) {
                     sendSearchRequest = false;
                     hideProgress();
+                } else if (response.body().string().contains("EMPTY_FACESET")) {
+                    if(!isSpeaking) {
+                        mSpeakPresenter.speak("注册为第一个客户吧~！");
+                    }else{
+                        sendSearchRequest = false;
+                        hideProgress();
+                    }
                 } else {
                     sendSearchRequest = false;
                     hideProgress();
@@ -747,22 +743,26 @@ public class DetectActivity extends BaseActivity
         isSpeaking = true;
         hideProgress();
         startSpeakTime = System.currentTimeMillis();
+        Log.i(TAG, "onSpeakBegin: 注册为第一个客户吧，关闭了进度条");
         toast("检测耗时：" + (startSpeakTime - sendRequestTime), Toast.LENGTH_SHORT);
     }
 
     @Override
     public void onSpeakPaused() {
+        Log.i(TAG, "onSpeakPaused: isSpeaking=false");
         isSpeaking = false;
     }
 
     @Override
     public void onSpeakResumed() {
+        Log.i(TAG, "onSpeakResumed: isSpeaking=true");
         isSpeaking = true;
 
     }
 
     @Override
     public void onCompleted() {
+        Log.i(TAG, "onCompleted: isSpeaking=false");
         isSpeaking = false;
 
     }

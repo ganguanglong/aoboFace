@@ -105,8 +105,6 @@ public class RegisterActivity extends BaseActivity {
         initView();
         /*GreenDao初始化*/
         initGreenDao();
-
-
     }
 
     /**

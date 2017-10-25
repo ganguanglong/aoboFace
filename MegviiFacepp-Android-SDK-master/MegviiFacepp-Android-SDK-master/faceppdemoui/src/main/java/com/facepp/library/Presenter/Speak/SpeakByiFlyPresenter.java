@@ -2,7 +2,9 @@ package com.facepp.library.Presenter.Speak;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.facepp.library.Model.Util.Util;
 import com.facepp.library.Presenter.BasePresenter;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
@@ -33,7 +35,7 @@ public class SpeakByiFlyPresenter extends BasePresenter<SpeakContract.View> impl
     }
 
     @Override
-    public void Speak(String str) {
+    public void speak(String str) {
         mTts.startSpeaking(str, new SynthesizerListener() {
             @Override
             public void onSpeakBegin() {
@@ -42,7 +44,6 @@ public class SpeakByiFlyPresenter extends BasePresenter<SpeakContract.View> impl
 
             @Override
             public void onBufferProgress(int i, int i1, int i2, String s) {
-
             }
 
             @Override

@@ -36,24 +36,20 @@ import com.facepp.library.Model.Util.OpenGLUtil;
 import com.facepp.library.Model.Util.Screen;
 import com.facepp.library.Model.Util.SensorEventUtil;
 import com.facepp.library.Model.Util.Util;
-import com.facepp.library.Model.Util.YuvUtil;
 import com.facepp.library.Presenter.BasePresenter;
-import com.facepp.library.Presenter.CompressContract.Save2JpegPresenterForAB1;
 import com.facepp.library.Presenter.CompressContract.Save2JpegPresenterForAB2;
 import com.facepp.library.Presenter.CompressContract.Video2JpegContract;
+import com.facepp.library.Presenter.Parse.ParseByGsonPresenter;
+import com.facepp.library.Presenter.Parse.ParseResponseContract;
 import com.facepp.library.Presenter.Speak.SpeakContract;
 import com.facepp.library.Presenter.Speak.SpeakByiFlyPresenter;
 import com.facepp.library.R;
 import com.facepp.library.View.Activity.BaseActivity;
 import com.facepp.library.View.Activity.RegisterActivity.RegisterActivity;
-import com.google.gson.Gson;
-import com.iflytek.cloud.SpeechError;
 import com.megvii.facepp.sdk.Facepp;
 
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,7 +76,6 @@ import static com.facepp.library.Model.Util.Util.mApiKey;
 import static com.facepp.library.Model.Util.Util.mApiSecret;
 import static com.facepp.library.Model.Util.Util.mImageFile;
 import static com.facepp.library.Model.Util.Util.mOuterId;
-import static com.facepp.library.Model.Util.Util.mPicUrl;
 import static com.facepp.library.Model.Util.Util.url_base;
 import static com.facepp.library.Model.Util.Util.url_search;
 
@@ -113,12 +108,14 @@ public class DetectActivity extends BaseActivity
     private FaceUserDao mFaceUserDao;
     private SpeakContract.Presenter mSpeakPresenter = new SpeakByiFlyPresenter();
     private Video2JpegContract.Presenter mSave2JpegPresenter = new Save2JpegPresenterForAB2();
+    private ParseResponseContract.Presenter mParseResponsePresenter = new ParseByGsonPresenter();
     private List<BasePresenter> mPresenterList = new ArrayList<>();
 
     @Override
     protected void initPresenter() {
         mPresenterList.add((BasePresenter) mSpeakPresenter);
         mPresenterList.add((BasePresenter) mSave2JpegPresenter);
+        mPresenterList.add((BasePresenter) mParseResponsePresenter);
         initPresenterList(mPresenterList,this);
     }
     @Override
@@ -512,11 +509,7 @@ public class DetectActivity extends BaseActivity
                 setConfig(rotation);
                 /*人脸检测，返回一个faces，是一个face的数组*/
                 //把onPreviewFrame获得的imgData传进去应该是最重要的
-//                final Facepp.Face[] faces = facepp.detect(imgData,height ,width,Facepp.IMAGEMODE_NV21);
-//                fileName = saveToJPEGandOutput(imgData, height,width );
-
                 final Facepp.Face[] faces = facepp.detect(imgData, width, height, Facepp.IMAGEMODE_NV21);
-
                 /*判断faces返回的数据是否为空*/
                 if (faces != null) {
                     /*新建一个动态数组 和人脸关键点有关的*/
@@ -617,8 +610,7 @@ public class DetectActivity extends BaseActivity
                 if (response.code() == 200) {
                     /*判断这个人是否已注册*/
                     SearchFace searchFace;
-                    searchFace = parseWithGson(response, SearchFace.class);
-
+                    searchFace = mParseResponsePresenter.ParseResponse(response, SearchFace.class);
                     if (searchFace == null) {
                         sendSearchRequest = false;
                         hideProgress();
@@ -719,23 +711,12 @@ public class DetectActivity extends BaseActivity
     private Boolean isSpeaking = false;
     private long startSpeakTime;
 
-    private <T> T parseWithGson(Response response, Class<T> clazz) throws IOException {
-        Gson mGson = new Gson();
-        T t = null;
-        if (mGson != null) {
-            t = mGson.fromJson(response.body().string(), clazz);
-
-        }
-        return t;
-    }
-
     /**
      * 此方法被onPreviewFrame触发
      *
      * @param rotation
      */
     private void setConfig(int rotation) {
-        Log.i(TAG, "setConfig");
         Facepp.FaceppConfig faceppConfig = facepp.getFaceppConfig();
         if (faceppConfig.rotation != rotation) {
             faceppConfig.rotation = rotation;
@@ -745,7 +726,6 @@ public class DetectActivity extends BaseActivity
 
     @Override
     protected void onPause() {
-        Log.i(TAG, "onPause");
         super.onPause();
         ConUtil.releaseWakeLock();
 
@@ -757,7 +737,6 @@ public class DetectActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
-        Log.i(TAG, "onDestroy");
         super.onDestroy();
         facepp.release();
     }

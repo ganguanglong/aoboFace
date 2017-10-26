@@ -14,7 +14,7 @@
         android:textSize="14sp"
         android:visibility="gone" />
 
-    <com.facepp.library.Model.Util.AutoRatioImageview
+    <com.facepp.library.model.util.AutoRatioImageview
         android:layout_width="180dip"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

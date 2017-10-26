@@ -16,14 +16,14 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo.NoActionBar.TranslucentDecor">
         <activity
-            android:name="com.facepp.library.Zuseless.FaceppActionActivity"
+            android:name="com.facepp.library.zuseless.FaceppActionActivity"
             android:screenOrientation="portrait"></activity>
 
         <activity
-            android:name="com.facepp.library.View.Activity.Detect.DetectActivity"
+            android:name="com.facepp.library.view.activity.detect.DetectActivity"
             android:screenOrientation="landscape"></activity>
         <activity
-            android:name="com.facepp.library.View.Activity.RegisterActivity.RegisterActivity"
+            android:name="com.facepp.library.view.activity.registeractivity.RegisterActivity"
             android:screenOrientation="landscape"></activity>
     </application>
 

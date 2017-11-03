@@ -14,11 +14,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.facepp.library.model.util.ConUtil;
-import com.facepp.library.model.util.StaticClass;
-import com.facepp.library.model.util.DialogUtil;
-import com.facepp.library.model.util.SharedUtil;
-import com.facepp.library.view.activity.detect.DetectActivity;
+import com.facepp.library.util.ConUtil;
+import com.facepp.library.util.StaticClass;
+import com.facepp.library.util.DialogUtil;
+import com.facepp.library.util.SharedUtil;
+import com.facepp.library.mvp.view.activity.detect.DetectActivity;
 import com.megvii.awesomedemo.facepp.R;
 import com.megvii.facepp.sdk.Facepp;
 import com.megvii.licensemanager.sdk.LicenseManager;

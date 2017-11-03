@@ -28,5 +28,10 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
+    compile 'com.squareup.okhttp3:okhttp:3.9.0'
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'org.greenrobot:greendao-api:3.2.2'
+    compile 'org.greenrobot:greendao:3.2.2'
+    compile 'com.github.FacePlusPlus:MegviiLicMgr-Android-SDK:0.3.0'
     compile project(':sdk')
 }

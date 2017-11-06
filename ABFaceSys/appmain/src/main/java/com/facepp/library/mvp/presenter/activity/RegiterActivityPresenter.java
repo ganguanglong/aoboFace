@@ -7,12 +7,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facepp.library.R;
 import com.facepp.library.mvp.model.entity.AddFace;
@@ -22,11 +16,8 @@ import com.facepp.library.mvp.model.entity.FaceUser;
 import com.facepp.library.mvp.model.entity.FaceUserDao;
 import com.facepp.library.mvp.model.entity.SearchFace;
 import com.facepp.library.mvp.presenter.BasePresenter;
-import com.facepp.library.mvp.presenter.function.parse.ParseByGsonPresenter;
-import com.facepp.library.mvp.presenter.function.parse.ParseResponseContract;
-import com.facepp.library.mvp.presenter.function.speak.SpeakByiFlyPresenter;
-import com.facepp.library.mvp.presenter.function.speak.SpeakContract;
-import com.facepp.library.mvp.view.activity.register.RegisterActivity;
+import com.facepp.library.mvp.model.transaction.parse.ParseByGsonPresenter;
+import com.facepp.library.mvp.model.transaction.parse.ParseResponseContract;
 import com.facepp.library.util.GreenDaoUtil;
 import com.facepp.library.util.StaticClass;
 
@@ -42,7 +33,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static com.facepp.library.R.id.et_first_name;
 import static com.facepp.library.util.ConUtil.updateGallery;
 import static com.facepp.library.util.StaticClass.API_KEY;
 import static com.facepp.library.util.StaticClass.API_SECRET;
